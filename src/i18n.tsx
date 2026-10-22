@@ -31,7 +31,7 @@ const ui = {
     surpriseHint: 'Pick a random recipe from the list',
     stats: (n: number, c: number) => `${n} recipes · ${c} cuisines`,
     resultsFor: (q: string) => `Results for “${q}”`,
-    recipeOfDay: 'Recipe of the Day',
+    recipeOfDay: 'Vika’s favourite',
     allRecipesTile: 'All recipes',
     recipesCount: (n: number) => `${n} ${n === 1 ? 'recipe' : 'recipes'}`,
     moreCategories: 'More',
@@ -114,7 +114,7 @@ const ui = {
     stats: (n: number, c: number) =>
       `${n} ${ukPlural(n, 'рецепт', 'рецепти', 'рецептів')} · ${c} ${ukPlural(c, 'кухня', 'кухні', 'кухонь')}`,
     resultsFor: (q: string) => `Результати для «${q}»`,
-    recipeOfDay: 'Рецепт дня',
+    recipeOfDay: 'Улюблене Віки',
     allRecipesTile: 'Усі рецепти',
     recipesCount: (n: number) => `${n} ${ukPlural(n, 'рецепт', 'рецепти', 'рецептів')}`,
     moreCategories: 'Ще',

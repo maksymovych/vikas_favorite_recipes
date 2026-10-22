@@ -11,11 +11,11 @@ interface Props {
   onBrowse: () => void
 }
 
-/** Same recipe for everyone all day, changes at midnight. */
-function recipeOfTheDay(list: LocalRecipe[]) {
-  const withPhoto = list.filter((r) => photos[r.id])
-  const day = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000)
-  return withPhoto[(day * 7) % withPhoto.length]
+/** The recipe shown in the big hero photo. Change the id to feature a different one. */
+const FEATURED_ID = 'ukrainian-borscht'
+
+function featuredRecipe(list: LocalRecipe[]) {
+  return list.find((r) => r.id === FEATURED_ID) ?? list.find((r) => photos[r.id])
 }
 
 function Leaf({ className }: { className?: string }) {
@@ -29,7 +29,7 @@ function Leaf({ className }: { className?: string }) {
 
 export default function Hero({ recipes, cuisineCount, onBrowse }: Props) {
   const { d } = useLang()
-  const today = recipeOfTheDay(recipes)
+  const today = featuredRecipe(recipes)
   const thumbs = recipes.filter((r) => photos[r.id]).slice(0, 5)
 
   return (
