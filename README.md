@@ -29,8 +29,7 @@ npm run dev
 **Your own photos:** put the image in `public/images/my-photos/` and add a line to `src/data/myPhotos.ts`
 (`'recipe-id': 'file-name.jpg'`). It replaces the Wikimedia photo for that recipe everywhere on the site.
 
-**Other photos:
-** recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
+**Other photos:** recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
 (CC0, CC BY, CC BY-SA, public domain). Each recipe page credits the author and license with a link to the original.
 
 ## Checklists (`/lists`)
