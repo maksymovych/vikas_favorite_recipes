@@ -46,6 +46,7 @@ export const CUISINES = [
   'Spanish',
   'Uzbek',
   'Middle Eastern',
+  'Canadian',
   'International',
 ] as const
 export type Cuisine = (typeof CUISINES)[number]

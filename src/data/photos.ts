@@ -45,4 +45,9 @@ export const photos: Record<string, Photo> = {
   'cheesecake': { src: '/images/cheesecake.jpg', author: "zingyyellow", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Baked_cheesecake_with_raspberries_and_blueberries.jpg" },
   'tiramisu': { src: '/images/tiramisu.jpg', author: "Sharon Chen from Austin, United States", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Classic_Italian_Tiramisu-3_(29989504485).jpg" },
   'classic-stuffing': { src: '/images/classic-stuffing.jpg', author: "Roundhere44", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Stuffing_on_white_plate.jpg" },
+  'poutine': { src: '/images/poutine.jpg', author: "Antonydstevens", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Poutine_from_Windsor,_ON.jpg" },
+  'tourtiere': { src: '/images/tourtiere.jpg', author: "Craig Dugas", license: "CC BY-SA 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Warm_Tourtiere_(cropped).jpg" },
+  'nanaimo-bars': { src: '/images/nanaimo-bars.jpg', author: "Craig Dugas", license: "CC BY-SA 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Nanaimo_Bars,_stacked.jpg" },
+  'butter-tarts': { src: '/images/butter-tarts.jpg', author: "Didriks from Cambridge, MA, USA", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Small_butter_tarts_(6231477570).jpg" },
+  'maple-glazed-salmon': { src: '/images/maple-glazed-salmon.jpg', author: "Haydn Blackey from Cardiff, Wales", license: "CC BY-SA 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Honey_Maple_Glazed_Salmon_with_sweet_potato_and_corn_hash_Brussels_sprouts_and_corn_bread_-_The_Landing,_Marblehead_(43872530271).jpg" },
 }

@@ -26,7 +26,7 @@ export default function CategoryTiles({ value, onChange, counts, total }: Props)
       aria-pressed={active}
       className={`flex min-w-[150px] shrink-0 items-center gap-3 ${showAll ? "" : "lg:min-w-0"} rounded-2xl border px-3 py-2.5 text-left transition hover:-translate-y-0.5 lg:gap-2 lg:px-2.5 hover:shadow-md ${
         active
-          ? 'border-accent bg-accent-soft/60 shadow-sm ring-1 ring-accent'
+          ? 'border-accent bg-accent-soft shadow-sm'
           : 'border-stone-200/80 bg-surface hover:border-stone-300'
       }`}
     >
@@ -39,7 +39,7 @@ export default function CategoryTiles({ value, onChange, counts, total }: Props)
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="line-clamp-2 block text-sm leading-tight font-semibold text-stone-900">{label}</span>
+        <span className={`line-clamp-2 block text-sm leading-tight font-semibold ${active ? "text-accent" : "text-stone-900"}`}>{label}</span>
         <span className="block text-xs text-stone-500">{sub}</span>
       </span>
     </button>

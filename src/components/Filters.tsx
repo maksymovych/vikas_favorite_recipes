@@ -39,8 +39,8 @@ function Row({
         type="button"
         onClick={onClick}
         aria-pressed={active}
-        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] transition ${
-          active ? 'bg-accent-soft font-semibold text-stone-900' : 'text-stone-700 hover:bg-stone-100'
+        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] transition outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
+          active ? 'bg-accent-soft font-semibold text-accent' : 'text-stone-700 hover:bg-stone-100'
         }`}
       >
         {icon && (

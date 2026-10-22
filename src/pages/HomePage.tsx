@@ -160,7 +160,7 @@ export default function HomePage({ f }: Props) {
 
         <div className="mt-8 lg:grid lg:grid-cols-[250px_1fr] lg:gap-10">
           <aside className="hidden lg:block">
-            <div className="no-scrollbar sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto border-r border-stone-200/70 pr-6 pb-6">
+            <div className="no-scrollbar sticky top-24 -ml-3 max-h-[calc(100dvh-7rem)] overflow-y-auto border-r border-stone-200/70 pt-1 pr-6 pb-6 pl-3">
               {filters}
             </div>
           </aside>

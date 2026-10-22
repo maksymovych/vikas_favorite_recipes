@@ -66,6 +66,12 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 
+/* Keyboard focus: a soft teal ring instead of the browser default outline */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .no-scrollbar {
   scrollbar-width: none;
 }
