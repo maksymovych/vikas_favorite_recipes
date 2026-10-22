@@ -159,7 +159,7 @@ export default function ContactPage() {
         const blob = await shrink(toUpload[i].file)
         const ext = blob.type === 'image/jpeg' ? 'jpg' : (toUpload[i].file.name.split('.').pop() ?? 'jpg')
         const result = await upload(`submissions/${safeName(toUpload[i].file.name)}.${ext}`, blob, {
-          access: 'public',
+          access: 'private',
           handleUploadUrl: '/api/upload',
           contentType: blob.type || undefined,
         })

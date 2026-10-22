@@ -48,6 +48,8 @@ SELECT * FROM submissions ORDER BY created_at DESC;
 ```
 
 Photo links are in the `image_urls` column (kept for turning photographed recipes into site recipes later).
+Photos are stored **privately** (the Blob store must be a private store), so the links don't open in a browser on their own —
+view them in Vercel → **Storage** → your Blob store → **Browser**.
 
 ### Environment variables
 
