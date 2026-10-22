@@ -1,5 +1,7 @@
+import { ArrowLeft, Clock, Printer, Signal } from 'lucide-react'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { FavoriteButton } from '../components/RecipeCard'
 import { photos } from '../data/photos'
 import { recipes } from '../data/recipes'
 import { useLang } from '../i18n'
@@ -79,22 +81,22 @@ export default function RecipePage() {
         <button
           type="button"
           onClick={goBack}
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-200/60"
+          className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
         >
-          <span aria-hidden>←</span> {d.t.back}
+          <ArrowLeft size={18} /> {d.t.back}
         </button>
         <button
           type="button"
           onClick={() => window.print()}
           className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-surface px-4 py-2 text-sm font-medium text-stone-800 shadow-sm transition hover:bg-stone-100"
         >
-          <span aria-hidden>🖨️</span> {d.t.print}
+          <Printer size={17} /> {d.t.print}
         </button>
       </div>
 
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-100 to-orange-200 shadow-sm dark:from-stone-200 dark:to-stone-300 print:hidden">
-        <div className="aspect-[16/10] sm:aspect-[21/9]">
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-100 to-orange-200 shadow-2xl shadow-orange-900/10 dark:from-stone-200 dark:to-stone-300 print:hidden">
+        <div className="aspect-[4/3] sm:aspect-[21/9]">
           {photo ? (
             <img src={photo.src} alt={recipe.title} className="h-full w-full object-cover" />
           ) : (
@@ -102,6 +104,22 @@ export default function RecipePage() {
               {recipe.emoji}
             </span>
           )}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+        <FavoriteButton id={recipe.id} className="absolute top-4 right-4 h-11 w-11" />
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
+          <p className="text-xs font-semibold tracking-[0.14em] text-white/80 uppercase">
+            {d.cuisine(recipe.cuisine)} · {d.category(recipe.categories[0])}
+          </p>
+          <h1 className="font-display mt-1 text-3xl leading-tight font-extrabold drop-shadow sm:text-5xl">{recipe.title}</h1>
+          <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-white/90 sm:text-base">
+            <span className="inline-flex items-center gap-1.5">
+              <Clock size={16} /> {d.time(recipe.prepMinutes + recipe.cookMinutes)}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Signal size={16} /> {d.difficulty(recipe.difficulty)}
+            </span>
+          </p>
         </div>
       </div>
       {photo && (
@@ -116,12 +134,12 @@ export default function RecipePage() {
 
       {/* Title */}
       <header className="mt-4 sm:mt-6 print:mt-0">
-        <p className="text-xs font-semibold tracking-wider text-terracotta uppercase print:text-stone-600">
-          {d.cuisine(recipe.cuisine)} · {d.category(recipe.categories[0])}
-        </p>
-        <h1 className="font-display mt-1 text-3xl leading-tight font-bold text-stone-900 sm:text-5xl print:text-3xl">
-          {recipe.title}
-        </h1>
+        <div className="hidden print:block">
+          <p className="text-xs font-semibold tracking-wider text-stone-600 uppercase">
+            {d.cuisine(recipe.cuisine)} · {d.category(recipe.categories[0])}
+          </p>
+          <h1 className="font-display mt-1 text-3xl leading-tight font-bold text-stone-900">{recipe.title}</h1>
+        </div>
         {recipe.credit && <p className="mt-1 text-stone-600 italic">{recipe.credit}</p>}
         <p className="mt-3 max-w-3xl text-lg text-stone-700 print:text-base">{recipe.description}</p>
       </header>
@@ -135,7 +153,7 @@ export default function RecipePage() {
         ].map(([label, value]) => (
           <div
             key={label}
-            className="rounded-2xl bg-surface px-4 py-3 shadow-sm print:rounded-none print:bg-transparent print:p-0 print:shadow-none"
+            className="rounded-2xl border border-stone-200/70 bg-surface px-4 py-3 print:rounded-none print:border-0 print:bg-transparent print:p-0 print:shadow-none"
           >
             <dt className="text-xs text-stone-500">{label}</dt>
             <dd className="font-semibold text-stone-800">{value}</dd>
@@ -158,7 +176,7 @@ export default function RecipePage() {
 
       <div className="mt-10 grid gap-10 md:grid-cols-[2fr_3fr] print:mt-6 print:grid-cols-[2fr_3fr] print:gap-8">
         <section className="md:sticky md:top-24 md:self-start print:static">
-          <div className="rounded-3xl bg-surface p-5 shadow-sm sm:p-6 print:rounded-none print:bg-transparent print:p-0 print:shadow-none">
+          <div className="rounded-3xl border border-stone-200/70 bg-surface p-5 shadow-sm sm:p-6 print:rounded-none print:border-0 print:bg-transparent print:p-0 print:shadow-none">
             <h2 className="font-display mb-3 text-2xl font-semibold text-stone-900 print:text-xl">{d.t.ingredients}</h2>
             <ul className="space-y-1">
               {recipe.ingredients.map((ing, i) => (

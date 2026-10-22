@@ -44,4 +44,5 @@ export const photos: Record<string, Photo> = {
   'napoleon-cake': { src: '/images/napoleon-cake.jpg', author: "Otets at lb.wikipedia", license: "CC BY-SA 3.0 lu", sourceUrl: "https://commons.wikimedia.org/wiki/File:TortNapoleon(kuski).jpg" },
   'cheesecake': { src: '/images/cheesecake.jpg', author: "zingyyellow", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Baked_cheesecake_with_raspberries_and_blueberries.jpg" },
   'tiramisu': { src: '/images/tiramisu.jpg', author: "Sharon Chen from Austin, United States", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Classic_Italian_Tiramisu-3_(29989504485).jpg" },
+  'classic-stuffing': { src: '/images/classic-stuffing.jpg', author: "Roundhere44", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Stuffing_on_white_plate.jpg" },
 }

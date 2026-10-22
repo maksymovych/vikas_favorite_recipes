@@ -1,3 +1,4 @@
+import { Check, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useLang } from '../i18n'
 import { CUISINES, SEASONS, SEASON_ICONS, type Cuisine, type Season } from '../types'
@@ -16,13 +17,47 @@ interface Props {
   hasActiveFilters: boolean
 }
 
-const VISIBLE_INGREDIENTS = 18
+const VISIBLE_INGREDIENTS = 16
+const heading = 'mb-3 text-xs font-semibold tracking-[0.12em] text-terracotta uppercase'
 
-const heading = 'mb-3 text-xs font-semibold tracking-wider text-stone-500 uppercase'
-const pill = (active: boolean, activeCls: string) =>
-  `inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
-    active ? activeCls : 'border-stone-200 bg-surface text-stone-700 hover:border-stone-300 hover:bg-stone-100'
-  }`
+function Row({
+  active,
+  onClick,
+  icon,
+  label,
+  count,
+}: {
+  active: boolean
+  onClick: () => void
+  icon?: string
+  label: string
+  count: number
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-pressed={active}
+        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] transition ${
+          active ? 'bg-peach font-semibold text-stone-900' : 'text-stone-700 hover:bg-stone-100'
+        }`}
+      >
+        {icon && (
+          <span className="w-6 text-center text-lg" aria-hidden>
+            {icon}
+          </span>
+        )}
+        <span className="flex-1">{label}</span>
+        {active ? (
+          <Check size={16} className="text-terracotta" />
+        ) : (
+          <span className="text-sm text-stone-400">{count}</span>
+        )}
+      </button>
+    </li>
+  )
+}
 
 export default function Filters(props: Props) {
   const { d } = useLang()
@@ -43,62 +78,51 @@ export default function Filters(props: Props) {
     showAll || ingredientQuery ? matchingIngredients : matchingIngredients.slice(0, VISIBLE_INGREDIENTS)
 
   return (
-    <div className="space-y-7">
-      <section>
+    <div className="space-y-8">
+      <section id="seasons" className="scroll-mt-28">
         <h3 className={heading}>{d.t.season}</h3>
-        <div className="flex flex-wrap gap-2">
-          {SEASONS.map((s) => {
-            const active = seasons.includes(s)
-            return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => props.onToggleSeason(s)}
-                aria-pressed={active}
-                className={pill(active, 'border-terracotta bg-terracotta text-white shadow-sm')}
-              >
-                <span aria-hidden>{SEASON_ICONS[s]}</span>
-                {d.season(s)}
-                <span className={`text-xs ${active ? 'text-white/80' : 'text-stone-400'}`}>
-                  {props.seasonCounts[s]}
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        <ul className="-mx-3 space-y-0.5">
+          {SEASONS.map((s) => (
+            <Row
+              key={s}
+              active={seasons.includes(s)}
+              onClick={() => props.onToggleSeason(s)}
+              icon={SEASON_ICONS[s]}
+              label={d.season(s)}
+              count={props.seasonCounts[s]}
+            />
+          ))}
+        </ul>
       </section>
 
       <section>
         <h3 className={heading}>{d.t.cuisine}</h3>
-        <div className="flex flex-wrap gap-2">
-          {CUISINES.map((c) => {
-            const active = cuisines.includes(c)
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() => props.onToggleCuisine(c)}
-                aria-pressed={active}
-                className={pill(active, 'border-stone-900 bg-stone-900 text-cream shadow-sm')}
-              >
-                {d.cuisine(c)}
-                <span className={`text-xs ${active ? 'opacity-75' : 'text-stone-400'}`}>{props.cuisineCounts[c]}</span>
-              </button>
-            )
-          })}
-        </div>
+        <ul className="-mx-3 space-y-0.5">
+          {CUISINES.map((c) => (
+            <Row
+              key={c}
+              active={cuisines.includes(c)}
+              onClick={() => props.onToggleCuisine(c)}
+              label={d.cuisine(c)}
+              count={props.cuisineCounts[c]}
+            />
+          ))}
+        </ul>
       </section>
 
       <section>
-        <h3 className="mb-1 text-xs font-semibold tracking-wider text-stone-500 uppercase">{d.t.ingredients}</h3>
+        <h3 className="mb-1 text-xs font-semibold tracking-[0.12em] text-terracotta uppercase">{d.t.ingredients}</h3>
         <p className="mb-3 text-xs text-stone-500">{d.t.ingredientsHint}</p>
-        <input
-          type="search"
-          value={ingredientQuery}
-          onChange={(e) => setIngredientQuery(e.target.value)}
-          placeholder={d.t.findIngredient}
-          className="mb-3 w-full rounded-xl border border-stone-200 bg-surface px-3 py-2 text-sm text-stone-800 outline-none placeholder:text-stone-400 focus:border-terracotta focus:ring-2 focus:ring-terracotta/20"
-        />
+        <label className="relative mb-3 block">
+          <Search size={16} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-stone-400" />
+          <input
+            type="search"
+            value={ingredientQuery}
+            onChange={(e) => setIngredientQuery(e.target.value)}
+            placeholder={d.t.findIngredient}
+            className="w-full rounded-xl border border-stone-200 bg-surface py-2 pr-3 pl-9 text-sm text-stone-800 outline-none placeholder:text-stone-400 focus:border-terracotta focus:ring-2 focus:ring-terracotta/20"
+          />
+        </label>
         <div className="flex flex-wrap gap-1.5">
           {visible.map(({ name, label, count }) => {
             const active = ingredients.includes(name)
@@ -108,7 +132,7 @@ export default function Filters(props: Props) {
                 type="button"
                 onClick={() => props.onToggleIngredient(name)}
                 aria-pressed={active}
-                className={`rounded-lg border px-2.5 py-1 text-sm transition first-letter:uppercase ${
+                className={`rounded-full border px-3 py-1 text-sm transition first-letter:uppercase ${
                   active
                     ? 'border-olive bg-olive text-white'
                     : 'border-stone-200 bg-surface text-stone-700 hover:border-olive/60'
@@ -128,7 +152,7 @@ export default function Filters(props: Props) {
             onClick={() => setShowAll((v) => !v)}
             className="mt-3 text-sm font-medium text-terracotta hover:underline"
           >
-            {showAll ? d.t.showFewer : d.t.showAllIngredients(matchingIngredients.length)}
+            {showAll ? d.t.showFewer : d.t.showAllIngredients(matchingIngredients.length)} →
           </button>
         )}
       </section>
@@ -137,7 +161,7 @@ export default function Filters(props: Props) {
         <button
           type="button"
           onClick={props.onClear}
-          className="w-full rounded-xl border border-stone-300 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
+          className="w-full rounded-xl border border-stone-300 py-2.5 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
         >
           {d.t.clearAll}
         </button>

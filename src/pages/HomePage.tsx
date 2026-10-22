@@ -1,9 +1,12 @@
+import { ChevronDown, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react'
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { useNavigationType } from 'react-router'
-import CategoryBar from '../components/CategoryBar'
+import { useNavigate, useNavigationType } from 'react-router'
+import CategoryTiles from '../components/CategoryTiles'
 import Filters from '../components/Filters'
+import Hero from '../components/Hero'
 import RecipeCard from '../components/RecipeCard'
 import { recipes } from '../data/recipes'
+import { useFavorites } from '../favorites'
 import { useLang } from '../i18n'
 import { localizeRecipe } from '../localize'
 import { CATEGORIES, CUISINES, SEASONS } from '../types'
@@ -20,6 +23,7 @@ function countBy<K extends string>(keys: readonly K[], getKeys: (r: (typeof reci
 const categoryCounts = countBy(CATEGORIES, (r) => r.categories)
 const seasonCounts = countBy(SEASONS, (r) => r.seasons)
 const cuisineCounts = countBy(CUISINES, (r) => [r.cuisine])
+const usedCuisines = CUISINES.filter((c) => cuisineCounts[c] > 0).length
 
 const allIngredients = (() => {
   const counts = new Map<string, number>()
@@ -33,20 +37,24 @@ const allIngredients = (() => {
 /** Scroll position of the list, so "Back" from a recipe returns to the same spot. */
 let savedScroll = 0
 
-interface Props {
-  f: FilterState
-  drawerOpen: boolean
-  setDrawerOpen: (open: boolean) => void
+export function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
+interface Props {
+  f: FilterState
+}
+
+export default function HomePage({ f }: Props) {
   const { d } = useLang()
+  const fav = useFavorites()
   const navigationType = useNavigationType()
+  const navigate = useNavigate()
   const [sort, setSort] = useState<'az' | 'quickest' | 'easiest'>('az')
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   useLayoutEffect(() => {
     window.scrollTo(0, navigationType === 'POP' ? savedScroll : 0)
-    document.title = d.lang === 'uk' ? 'Рецепти Віки' : 'Vika’s Recipes'
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -60,13 +68,14 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
     const onChange = () => mq.matches && setDrawerOpen(false)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
-  }, [setDrawerOpen])
+  }, [])
 
   const localized = useMemo(() => recipes.map((r) => localizeRecipe(r, d)), [d])
 
   const filtered = useMemo(() => {
     const q = f.query.trim().toLowerCase()
     const result = localized.filter((r, idx) => {
+      if (f.favoritesOnly && !fav.ids.includes(r.id)) return false
       if (f.category && !r.categories.includes(f.category)) return false
       if (f.seasons.length && !f.seasons.some((s) => r.seasons.includes(s))) return false
       if (f.cuisines.length && !f.cuisines.includes(r.cuisine)) return false
@@ -95,7 +104,24 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
       if (sort === 'easiest') return DIFFICULTY_RANK[a.difficulty] - DIFFICULTY_RANK[b.difficulty]
       return a.title.localeCompare(b.title, d.lang)
     })
-  }, [localized, f, sort, d])
+  }, [localized, f, fav.ids, sort, d])
+
+  // Random recipe from what is currently shown (or from everything if nothing matches)
+  const surprise = () => {
+    const pool = filtered.length ? filtered : localized
+    const r = pool[Math.floor(Math.random() * pool.length)]
+    savedScroll = window.scrollY
+    navigate(`/recipe/${r.id}`)
+  }
+
+  const title = f.favoritesOnly
+    ? d.t.favoritesTitle
+    : f.query.trim()
+      ? d.t.resultsFor(f.query.trim())
+      : f.category
+        ? d.category(f.category)
+        : d.t.featured
+  const subtitle = f.hasActiveFilters ? d.t.recipesCount(filtered.length) : d.t.featuredSub
 
   const filters = (
     <Filters
@@ -115,38 +141,121 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
 
   return (
     <>
-      <main className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <section className="py-6 sm:py-10">
-          <h1 className="font-display max-w-2xl text-3xl leading-tight font-bold text-stone-900 sm:text-4xl lg:text-5xl">
-            {d.t.heroTitle}
-          </h1>
-          <p className="mt-3 max-w-xl text-stone-600 sm:text-lg">{d.t.heroText}</p>
-        </section>
+      <main className="relative mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <Hero
+          recipes={localized}
+          cuisineCount={usedCuisines}
+          onBrowse={() => scrollToSection('recipes')}
+        />
 
-        <CategoryBar value={f.category} onChange={f.setCategory} counts={categoryCounts} />
+        <CategoryTiles
+          value={f.category}
+          onChange={(c) => {
+            f.setCategory(c)
+            f.setFavoritesOnly(false)
+          }}
+          counts={categoryCounts}
+          total={recipes.length}
+        />
 
-        <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-10">
+        <div className="mt-8 lg:grid lg:grid-cols-[250px_1fr] lg:gap-10">
           <aside className="hidden lg:block">
-            <div className="no-scrollbar sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto pb-4">{filters}</div>
+            <div className="no-scrollbar sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto border-r border-stone-200/70 pr-6 pb-6">
+              {filters}
+            </div>
           </aside>
 
-          <section aria-live="polite">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-stone-600">
-                <span className="font-semibold text-stone-900">{filtered.length}</span> {d.t.recipes(filtered.length)}
-              </p>
-              <label className="flex items-center gap-2 text-sm text-stone-600">
-                {d.t.sort}
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as typeof sort)}
-                  className="rounded-xl border border-stone-200 bg-surface px-2.5 py-1.5 text-sm text-stone-800 outline-none focus:border-terracotta"
-                >
-                  <option value="az">{d.t.sortAz}</option>
-                  <option value="quickest">{d.t.sortQuickest}</option>
-                  <option value="easiest">{d.t.sortEasiest}</option>
-                </select>
+          <section id="recipes" className="scroll-mt-24">
+            {/* Search sits right above the results, so you see them change as you type */}
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+              <label className="relative flex-1">
+                <span className="sr-only">{d.t.searchLabel}</span>
+                <Search
+                  size={20}
+                  className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-stone-400"
+                />
+                <input
+                  id="recipe-search"
+                  type="text"
+                  inputMode="search"
+                  autoComplete="off"
+                  value={f.query}
+                  onChange={(e) => f.setQuery(e.target.value)}
+                  placeholder={d.t.heroSearch}
+                  className="w-full rounded-2xl border border-stone-200 bg-surface py-3.5 pr-12 pl-12 text-base text-stone-800 shadow-sm outline-none placeholder:text-stone-400 focus:border-terracotta focus:ring-4 focus:ring-terracotta/15"
+                />
+                {f.query && (
+                  <button
+                    type="button"
+                    onClick={() => f.setQuery('')}
+                    aria-label={d.t.clearSearch}
+                    title={d.t.clearSearch}
+                    className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-stone-500 hover:bg-stone-100 hover:text-stone-800"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
               </label>
+              <button
+                type="button"
+                onClick={surprise}
+                title={d.t.surpriseHint}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-terracotta px-6 py-3.5 font-semibold text-white shadow-md shadow-orange-600/20 transition hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                <Sparkles size={18} /> {d.t.surprise}
+              </button>
+            </div>
+
+            <div aria-live="polite" className="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="font-display text-3xl font-bold text-stone-900">{title}</h2>
+                <p className="mt-1 text-stone-500">{subtitle}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(true)}
+                  className="relative inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-surface px-3.5 py-2 text-sm font-medium text-stone-800 shadow-sm lg:hidden"
+                >
+                  <SlidersHorizontal size={16} /> {d.t.filters}
+                  {f.activeCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1 text-xs text-white">
+                      {f.activeCount}
+                    </span>
+                  )}
+                </button>
+                <label className="relative">
+                  <span className="sr-only">{d.t.sort}</span>
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as typeof sort)}
+                    className="appearance-none rounded-xl border border-stone-200 bg-surface py-2 pr-9 pl-3.5 text-sm text-stone-800 shadow-sm outline-none focus:border-terracotta"
+                  >
+                    <option value="az">
+                      {d.t.sort}: {d.t.sortAz}
+                    </option>
+                    <option value="quickest">
+                      {d.t.sort}: {d.t.sortQuickest}
+                    </option>
+                    <option value="easiest">
+                      {d.t.sort}: {d.t.sortEasiest}
+                    </option>
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-stone-500"
+                  />
+                </label>
+                {f.hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={f.clearAll}
+                    className="hidden items-center gap-1.5 rounded-xl border border-stone-200 bg-surface px-3.5 py-2 text-sm font-medium text-stone-800 shadow-sm hover:bg-stone-100 sm:inline-flex"
+                  >
+                    <X size={15} /> {d.t.viewAll}
+                  </button>
+                )}
+              </div>
             </div>
 
             {filtered.length > 0 ? (
@@ -163,16 +272,18 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
             ) : (
               <div className="rounded-3xl border border-dashed border-stone-300 bg-surface/60 px-6 py-16 text-center">
                 <p className="text-5xl" aria-hidden>
-                  🥄
+                  {f.favoritesOnly ? '♡' : '🥄'}
                 </p>
-                <p className="font-display mt-3 text-xl font-semibold text-stone-900">{d.t.noMatchTitle}</p>
-                <p className="mt-1 text-stone-600">{d.t.noMatchText}</p>
+                <p className="font-display mt-3 text-xl font-semibold text-stone-900">
+                  {f.favoritesOnly ? d.t.favoritesTitle : d.t.noMatchTitle}
+                </p>
+                <p className="mt-1 text-stone-600">{f.favoritesOnly ? d.t.favoritesEmpty : d.t.noMatchText}</p>
                 <button
                   type="button"
                   onClick={f.clearAll}
-                  className="mt-5 rounded-xl bg-terracotta px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                  className="mt-5 rounded-xl bg-terracotta px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
                 >
-                  {d.t.clearFilters}
+                  {d.t.viewAll}
                 </button>
               </div>
             )}
@@ -192,7 +303,7 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
                 aria-label={d.t.closeFilters}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-stone-700 shadow-sm"
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-5 py-5">{filters}</div>
@@ -200,7 +311,7 @@ export default function HomePage({ f, drawerOpen, setDrawerOpen }: Props) {
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="w-full rounded-xl bg-stone-900 py-3 font-medium text-cream"
+                className="w-full rounded-xl bg-terracotta py-3 font-semibold text-white"
               >
                 {d.t.showRecipes(filtered.length)}
               </button>

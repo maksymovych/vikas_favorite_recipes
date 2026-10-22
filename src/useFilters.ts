@@ -12,6 +12,7 @@ export function useFilters() {
   const [seasons, setSeasons] = useState<Season[]>([])
   const [cuisines, setCuisines] = useState<Cuisine[]>([])
   const [ingredients, setIngredients] = useState<string[]>([])
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
 
   const activeCount = seasons.length + cuisines.length + ingredients.length
 
@@ -26,14 +27,17 @@ export function useFilters() {
     toggleCuisine: (c: Cuisine) => setCuisines((prev) => toggle(prev, c)),
     ingredients,
     toggleIngredient: (n: string) => setIngredients((prev) => toggle(prev, n)),
+    favoritesOnly,
+    setFavoritesOnly,
     activeCount,
-    hasActiveFilters: activeCount > 0 || !!category || !!query,
+    hasActiveFilters: activeCount > 0 || !!category || !!query || favoritesOnly,
     clearAll: () => {
       setQuery('')
       setCategory(null)
       setSeasons([])
       setCuisines([])
       setIngredients([])
+      setFavoritesOnly(false)
     },
   }
 }
