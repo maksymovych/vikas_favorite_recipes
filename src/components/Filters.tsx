@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
-import { SEASONS, SEASON_ICONS, type Season } from '../types'
+import { CUISINES, SEASONS, SEASON_ICONS, type Cuisine, type Season } from '../types'
 
 interface Props {
   seasons: Season[]
   onToggleSeason: (s: Season) => void
+  cuisines: Cuisine[]
+  onToggleCuisine: (c: Cuisine) => void
+  cuisineCounts: Record<Cuisine, number>
   ingredients: string[]
   onToggleIngredient: (name: string) => void
   allIngredients: { name: string; count: number }[]
@@ -17,6 +20,9 @@ const VISIBLE_INGREDIENTS = 18
 export default function Filters({
   seasons,
   onToggleSeason,
+  cuisines,
+  onToggleCuisine,
+  cuisineCounts,
   ingredients,
   onToggleIngredient,
   allIngredients,
@@ -65,6 +71,31 @@ export default function Filters({
                 <span className={`text-xs ${active ? 'text-white/80' : 'text-stone-400'}`}>
                   {seasonCounts[s]}
                 </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="mb-3 text-xs font-semibold tracking-wider text-stone-500 uppercase">Cuisine</h3>
+        <div className="flex flex-wrap gap-2">
+          {CUISINES.map((c) => {
+            const active = cuisines.includes(c)
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => onToggleCuisine(c)}
+                aria-pressed={active}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
+                  active
+                    ? 'border-stone-900 bg-stone-900 text-white shadow-sm'
+                    : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
+                }`}
+              >
+                {c}
+                <span className={`text-xs ${active ? 'text-white/80' : 'text-stone-400'}`}>{cuisineCounts[c]}</span>
               </button>
             )
           })}

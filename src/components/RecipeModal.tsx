@@ -48,7 +48,9 @@ export default function RecipeModal({ recipe, onClose }: Props) {
             {recipe.emoji}
           </span>
           <div className="min-w-0 pr-8">
-            <p className="text-xs font-semibold tracking-wider text-stone-700/80 uppercase">{recipe.category}</p>
+            <p className="text-xs font-semibold tracking-wider text-stone-700/80 uppercase">
+              {recipe.cuisine} · {recipe.category}
+            </p>
             <h2 id="recipe-title" className="font-display text-2xl leading-tight font-bold text-stone-900 sm:text-3xl">
               {recipe.title}
             </h2>

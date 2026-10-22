@@ -47,6 +47,7 @@ export default function RecipeCard({ recipe, onOpen, highlight }: Props) {
           </p>
         )}
         <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 text-xs text-stone-500">
+          <span>🌍 {recipe.cuisine}</span>
           <span>⏱ {formatTime(total)}</span>
           <span>👥 {recipe.servings}</span>
           <span>📊 {recipe.difficulty}</span>

@@ -3,7 +3,7 @@ import Filters from './components/Filters'
 import RecipeCard from './components/RecipeCard'
 import RecipeModal from './components/RecipeModal'
 import { recipes } from './data/recipes'
-import { CATEGORIES, SEASONS, type Category, type Season } from './types'
+import { CATEGORIES, CUISINES, SEASONS, type Category, type Cuisine, type Season } from './types'
 
 type Sort = 'az' | 'quickest' | 'easiest'
 
@@ -17,6 +17,7 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<Category | null>(null)
   const [seasons, setSeasons] = useState<Season[]>([])
+  const [cuisines, setCuisines] = useState<Cuisine[]>([])
   const [ingredients, setIngredients] = useState<string[]>([])
   const [sort, setSort] = useState<Sort>('az')
   const [openId, setOpenId] = useState<string | null>(null)
@@ -40,15 +41,22 @@ export default function App() {
     return counts
   }, [])
 
+  const cuisineCounts = useMemo(() => {
+    const counts = Object.fromEntries(CUISINES.map((c) => [c, 0])) as Record<Cuisine, number>
+    for (const r of recipes) counts[r.cuisine]++
+    return counts
+  }, [])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     const result = recipes.filter((r) => {
       if (category && r.category !== category) return false
       if (seasons.length && !seasons.some((s) => r.seasons.includes(s))) return false
+      if (cuisines.length && !cuisines.includes(r.cuisine)) return false
       if (ingredients.length && !ingredients.every((name) => r.ingredients.some((i) => i.name === name)))
         return false
       if (q) {
-        const haystack = [r.title, r.description, r.category, ...r.seasons, ...r.ingredients.map((i) => i.name)]
+        const haystack = [r.title, r.description, r.category, r.cuisine, ...r.seasons, ...r.ingredients.map((i) => i.name)]
           .join(' ')
           .toLowerCase()
         if (!q.split(/\s+/).every((word) => haystack.includes(word))) return false
@@ -61,15 +69,16 @@ export default function App() {
       if (sort === 'easiest') return DIFFICULTY_RANK[a.difficulty] - DIFFICULTY_RANK[b.difficulty]
       return a.title.localeCompare(b.title)
     })
-  }, [query, category, seasons, ingredients, sort])
+  }, [query, category, seasons, cuisines, ingredients, sort])
 
-  const activeFilterCount = seasons.length + ingredients.length
+  const activeFilterCount = seasons.length + cuisines.length + ingredients.length
   const hasActiveFilters = activeFilterCount > 0 || !!category || !!query
 
   const clearAll = () => {
     setQuery('')
     setCategory(null)
     setSeasons([])
+    setCuisines([])
     setIngredients([])
   }
 
@@ -88,6 +97,9 @@ export default function App() {
     <Filters
       seasons={seasons}
       onToggleSeason={(s) => setSeasons((prev) => toggle(prev, s))}
+      cuisines={cuisines}
+      onToggleCuisine={(c) => setCuisines((prev) => toggle(prev, c))}
+      cuisineCounts={cuisineCounts}
       ingredients={ingredients}
       onToggleIngredient={(n) => setIngredients((prev) => toggle(prev, n))}
       allIngredients={allIngredients}

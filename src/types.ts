@@ -7,8 +7,20 @@ export const CATEGORIES = [
   'Dessert',
   'Breakfast',
   'Drinks',
+  'Basics & Sauces',
 ] as const
 export type Category = (typeof CATEGORIES)[number]
+
+export const CUISINES = [
+  'Ukrainian',
+  'Italian',
+  'Georgian',
+  'American',
+  'Greek',
+  'Spanish',
+  'International',
+] as const
+export type Cuisine = (typeof CUISINES)[number]
 
 export const SEASONS = [
   'Christmas',
@@ -39,6 +51,7 @@ export interface Recipe {
   description: string
   emoji: string
   category: Category
+  cuisine: Cuisine
   seasons: Season[]
   prepMinutes: number
   cookMinutes: number
@@ -71,4 +84,5 @@ export const CATEGORY_STYLES: Record<Category, string> = {
   Dessert: 'from-pink-200 to-rose-300',
   Breakfast: 'from-orange-100 to-yellow-300',
   Drinks: 'from-sky-200 to-indigo-300',
+  'Basics & Sauces': 'from-stone-200 to-amber-200',
 }
