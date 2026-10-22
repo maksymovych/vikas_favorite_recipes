@@ -49,10 +49,28 @@ SELECT * FROM submissions ORDER BY created_at DESC;
 
 Photo links are in the `image_urls` column (kept for turning photographed recipes into site recipes later).
 
-Local testing of the form: `npm run dev` also runs the `/api` functions. They need the same keys as Vercel —
-put them in a `.env.local` file (never committed). Easiest: `npx vercel link` then `npx vercel env pull .env.local`,
-or copy `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN` from Vercel → Storage → your store → **.env.local** tab.
-Restart `npm run dev` after adding them.
+### Environment variables
+
+Only the contact form needs these — the recipe site itself works without any.
+
+| Variable | Required | What it is | Where to get it |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | Yes, for the contact form | Postgres connection string for the Neon database where messages are saved. Looks like `postgresql://user:password@host/dbname?sslmode=require`. `POSTGRES_URL` is also accepted if `DATABASE_URL` is missing. | Added automatically when the Neon database is connected to the project in Vercel → **Storage**. |
+| `BLOB_READ_WRITE_TOKEN` | Yes, for photo uploads | Secret token that lets `api/upload.ts` give the browser permission to upload photos to Vercel Blob. Starts with `vercel_blob_rw_`. | Added automatically when the Blob store is connected to the project in Vercel → **Storage**. |
+
+The Neon integration also adds other variables (`PGHOST`, `PGUSER`, `POSTGRES_PRISMA_URL`, …). They are not used
+and can be left as they are.
+
+**On Vercel** nothing needs to be typed in by hand — connecting the stores sets the variables for you.
+Remember to redeploy after connecting them.
+
+**On your computer** (`npm run dev` also runs the `/api` functions), put the same variables in a `.env.local` file
+in the project folder. `.env.example` shows the format. To fill it in, either:
+
+- run `npx vercel link` and then `npx vercel env pull .env.local`, or
+- copy the values from Vercel → **Storage** → your store → **.env.local** tab.
+
+Restart `npm run dev` after changing `.env.local`. This file holds secrets and is git-ignored — never commit it.
 
 ## Deploy
 
