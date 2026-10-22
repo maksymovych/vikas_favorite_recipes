@@ -4,6 +4,7 @@ import {
   Heart,
   House,
   LayoutGrid,
+  ListChecks,
   Mail,
   Menu,
   Moon,
@@ -24,6 +25,8 @@ import { useFilters } from './useFilters'
 // Loaded only when someone opens the contact page (keeps the main page fast)
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
+const ListsPage = lazy(() => import('./pages/ListsPage'))
+const ListPage = lazy(() => import('./pages/ListPage'))
 
 export default function App() {
   const { d, setLang } = useLang()
@@ -136,6 +139,7 @@ export default function App() {
             {navItem(d.t.navRecipes, () => goTo('recipes'))}
             {navItem(d.t.navCategories, () => goTo('categories'))}
             {navItem(d.t.navSeasons, goSeasons)}
+            {navItem(d.t.navLists, () => navigate('/lists'), location.pathname.startsWith('/list'))}
             {navItem(d.t.navContact, () => navigate('/contact'), location.pathname === '/contact')}
           </nav>
 
@@ -148,8 +152,8 @@ export default function App() {
               className="flex h-10 items-center gap-2 rounded-full px-2.5 text-stone-800 transition hover:bg-stone-100 md:border md:border-stone-200 md:bg-surface md:px-4 md:shadow-sm"
             >
               <Search size={19} />
-              <span className="hidden text-sm text-stone-500 md:inline">{d.t.searchLabel}</span>
-              <kbd className="hidden rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 font-sans text-[11px] text-stone-500 lg:inline">
+              <span className="hidden text-sm whitespace-nowrap text-stone-500 md:inline xl:hidden 2xl:inline">{d.t.searchLabel}</span>
+              <kbd className="hidden rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 font-sans text-[11px] whitespace-nowrap text-stone-500 lg:inline xl:hidden 2xl:inline">
                 {d.t.ctrlK}
               </kbd>
             </button>
@@ -248,6 +252,7 @@ export default function App() {
                   [d.t.navCategories, <LayoutGrid size={21} />, () => goTo('categories'), false],
                   [d.t.navSeasons, <CalendarHeart size={21} />, goSeasons, false],
                   [d.t.navFavorites, <Heart size={21} />, showFavorites, f.favoritesOnly],
+                  [d.t.navLists, <ListChecks size={21} />, () => navigate('/lists'), location.pathname.startsWith('/list')],
                   [d.t.navContact, <Mail size={21} />, () => navigate('/contact'), location.pathname === '/contact'],
                 ] as [string, ReactNode, () => void, boolean][]
               ).map(([label, icon, action, active]) => (
@@ -327,6 +332,22 @@ export default function App() {
             }
           />
           <Route
+            path="/lists"
+            element={
+              <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <ListsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/list/:id"
+            element={
+              <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <ListPage />
+              </Suspense>
+            }
+          />
+          <Route
             path="/admin"
             element={
               <Suspense fallback={<div className="min-h-[60vh]" />}>
@@ -342,7 +363,10 @@ export default function App() {
         <p className="inline-flex items-center gap-2">
           <CookingPot size={18} className="text-accent" /> {d.t.footer}
         </p>
-        <p className="mt-3">
+        <p className="mt-3 flex items-center justify-center gap-5">
+          <Link to="/lists" className="inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
+            <ListChecks size={15} /> {d.t.navLists}
+          </Link>
           <Link to="/contact" className="inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
             <Mail size={15} /> {d.t.navContact}
           </Link>

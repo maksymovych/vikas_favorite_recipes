@@ -8,60 +8,25 @@
 //   POST {action:'status', id, status} → 'new' | 'read' | 'archived'
 //   POST {action:'delete', id}         → deletes the message and its photos
 import { del, get } from '@vercel/blob'
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { adminSecret, isAdmin, makeToken, safeEqual, sessionCookie, SESSION_SECONDS } from './_auth'
 import { BLOB_URL_RE, databaseUrl, db, ensureTable } from './_db'
 
-const COOKIE = 'admin_session'
-const SESSION_SECONDS = 7 * 24 * 60 * 60
 const STATUSES = ['new', 'read', 'archived']
 
 const reply = (body: object, status = 200, headers?: HeadersInit) => Response.json(body, { status, headers })
 
-function sign(value: string, secret: string) {
-  return createHmac('sha256', secret).update(value).digest('base64url')
-}
-
-function safeEqual(a: string, b: string) {
-  const ab = Buffer.from(a)
-  const bb = Buffer.from(b)
-  return ab.length === bb.length && timingSafeEqual(ab, bb)
-}
-
-/** Session token = expiry time + signature. Changing ADMIN_PASSWORD logs everyone out. */
-function makeToken(secret: string) {
-  const expires = String(Math.floor(Date.now() / 1000) + SESSION_SECONDS)
-  return `${expires}.${sign(expires, secret)}`
-}
-
-function isLoggedIn(request: Request, secret: string) {
-  const cookie = request.headers.get('cookie') ?? ''
-  const token = cookie
-    .split(';')
-    .map((c) => c.trim())
-    .find((c) => c.startsWith(COOKIE + '='))
-    ?.slice(COOKIE.length + 1)
-  if (!token) return false
-  const [expires, signature] = token.split('.')
-  if (!expires || !signature || Number(expires) < Date.now() / 1000) return false
-  return safeEqual(signature, sign(expires, secret))
-}
-
-function sessionCookie(request: Request, value: string, maxAge: number) {
-  const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : ''
-  return `${COOKIE}=${value}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=${maxAge}${secure}`
-}
-
 function config() {
   const password = process.env.ADMIN_PASSWORD
+  const secret = adminSecret()
   const dbUrl = databaseUrl()
-  if (!password || !dbUrl) return null
-  return { password, secret: 'inbox:' + password, dbUrl }
+  if (!password || !secret || !dbUrl) return null
+  return { password, secret, dbUrl }
 }
 
 export async function GET(request: Request): Promise<Response> {
   const cfg = config()
   if (!cfg) return reply({ error: 'not_configured' }, 503)
-  if (!isLoggedIn(request, cfg.secret)) return reply({ error: 'unauthorized' }, 401)
+  if (!isAdmin(request)) return reply({ error: 'unauthorized' }, 401)
 
   const params = new URL(request.url).searchParams
   const action = params.get('action')
@@ -114,7 +79,7 @@ export async function POST(request: Request): Promise<Response> {
     return reply({ ok: true }, 200, { 'Set-Cookie': sessionCookie(request, '', 0) })
   }
 
-  if (!isLoggedIn(request, cfg.secret)) return reply({ error: 'unauthorized' }, 401)
+  if (!isAdmin(request)) return reply({ error: 'unauthorized' }, 401)
   const id = Number(data.id)
   if (!Number.isInteger(id)) return reply({ error: 'bad_id' }, 400)
   const sql = db(cfg.dbUrl)

@@ -1,6 +1,6 @@
 import { ArrowDown, Clock, Heart, Signal, Star } from 'lucide-react'
 import { Link } from 'react-router'
-import { photos } from '../data/photos'
+import { photos } from '../data/recipePhotos'
 import { useLang } from '../i18n'
 import type { LocalRecipe } from '../localize'
 import { FavoriteButton } from './RecipeCard'

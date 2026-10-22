@@ -2,7 +2,7 @@ import { ArrowLeft, Clock, Printer, Signal } from 'lucide-react'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { FavoriteButton } from '../components/RecipeCard'
-import { photos } from '../data/photos'
+import { photos } from '../data/recipePhotos'
 import { recipes } from '../data/recipes'
 import { useLang } from '../i18n'
 import { localizeRecipe } from '../localize'
@@ -122,7 +122,7 @@ export default function RecipePage() {
           </p>
         </div>
       </div>
-      {photo && (
+      {photo?.sourceUrl && (
         <p className="mt-2 text-right text-[11px] text-stone-400 print:hidden">
           {d.t.photo}:{' '}
           <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className="underline hover:text-stone-600">

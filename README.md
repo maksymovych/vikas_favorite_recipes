@@ -26,8 +26,24 @@ npm run dev
 
 ## Photos
 
-Recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
+**Your own photos:** put the image in `public/images/my-photos/` and add a line to `src/data/myPhotos.ts`
+(`'recipe-id': 'file-name.jpg'`). It replaces the Wikimedia photo for that recipe everywhere on the site.
+
+**Other photos:
+** recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
 (CC0, CC BY, CC BY-SA, public domain). Each recipe page credits the author and license with a link to the original.
+
+## Checklists (`/lists`)
+
+Shopping lists and plans for the day. Each line (or comma) becomes a checkbox; ticks and new items are saved
+instantly and everyone with the link sees them (the page refreshes every few seconds).
+
+- **Public** lists (default) are shown on the Lists page. **Private** lists are never listed — only people with the
+  link can open them (links use a random 12-character id).
+- Only the browser that created a list can delete it ("My lists" are remembered in that browser). A logged-in admin
+  can delete any list via the API.
+- Uses the same Neon database as the contact form (table `checklists`, created automatically) — no extra setup.
+  Code: `api/lists.ts`, `src/pages/ListsPage.tsx`, `src/pages/ListPage.tsx`.
 
 ## Contact form (database + photo uploads)
 

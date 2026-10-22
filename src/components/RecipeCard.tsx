@@ -1,7 +1,7 @@
 import { Clock, Heart, Signal } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { photos } from '../data/photos'
+import { photos } from '../data/recipePhotos'
 import { useFavorites } from '../favorites'
 import { useLang } from '../i18n'
 import type { LocalRecipe } from '../localize'
