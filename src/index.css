@@ -13,6 +13,16 @@
   --color-accent: #0e8f95;
   --color-olive: #3d8a5a;
 
+  --animate-slide-in: slide-in 0.25s ease-out;
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   --animate-slide-up: slide-up 0.25s ease-out;
   @keyframes slide-up {
     from {

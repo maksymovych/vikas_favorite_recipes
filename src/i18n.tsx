@@ -15,6 +15,11 @@ function ukPlural(n: number, one: string, few: string, many: string) {
 const ui = {
   en: {
     navContact: 'Contact',
+    menu: 'Menu',
+    closeMenu: 'Close menu',
+    themeLabel: 'Theme',
+    themeLight: 'Light',
+    themeDark: 'Dark',
     contactEyebrow: 'Say hello',
     contactTitle: 'Get in touch',
     contactIntro:
@@ -134,6 +139,11 @@ const ui = {
   },
   uk: {
     navContact: 'Контакти',
+    menu: 'Меню',
+    closeMenu: 'Закрити меню',
+    themeLabel: 'Тема',
+    themeLight: 'Світла',
+    themeDark: 'Темна',
     contactEyebrow: 'Напишіть нам',
     contactTitle: 'Зв’язатися',
     contactIntro:

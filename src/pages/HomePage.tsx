@@ -62,6 +62,13 @@ export default function HomePage({ f }: Props) {
     document.title = d.lang === 'uk' ? 'Рецепти Віки' : 'Vika’s Recipes'
   }, [d.lang])
 
+  // The mobile menu's "Seasons" link opens the filters drawer
+  useEffect(() => {
+    const open = () => setDrawerOpen(true)
+    window.addEventListener('open-filters', open)
+    return () => window.removeEventListener('open-filters', open)
+  }, [])
+
   // Close the mobile drawer automatically when the screen grows to desktop size
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')
