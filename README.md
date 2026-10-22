@@ -49,8 +49,10 @@ SELECT * FROM submissions ORDER BY created_at DESC;
 
 Photo links are in the `image_urls` column (kept for turning photographed recipes into site recipes later).
 
-Local testing of the form: `npm run dev` doesn't run the `/api` functions. Use `npx vercel link`, `npx vercel env pull`
-and then `npx vercel dev` instead.
+Local testing of the form: `npm run dev` also runs the `/api` functions. They need the same keys as Vercel —
+put them in a `.env.local` file (never committed). Easiest: `npx vercel link` then `npx vercel env pull .env.local`,
+or copy `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN` from Vercel → Storage → your store → **.env.local** tab.
+Restart `npm run dev` after adding them.
 
 ## Deploy
 
