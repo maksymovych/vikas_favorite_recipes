@@ -59,12 +59,31 @@ Only the contact form needs these — the recipe site itself works without any.
 | --- | --- | --- | --- |
 | `DATABASE_URL` | Yes, for the contact form | Postgres connection string for the Neon database where messages are saved. Looks like `postgresql://user:password@host/dbname?sslmode=require`. `POSTGRES_URL` is also accepted if `DATABASE_URL` is missing. | Added automatically when the Neon database is connected to the project in Vercel → **Storage**. |
 | `BLOB_READ_WRITE_TOKEN` | Yes, for photo uploads | Secret token that lets `api/upload.ts` give the browser permission to upload photos to Vercel Blob. Starts with `vercel_blob_rw_`. | Added automatically when the Blob store is connected to the project in Vercel → **Storage**. |
+| `ADMIN_PASSWORD` | Yes, for the inbox | Password for the private inbox at `/admin`, where you read messages and see photos. Choose a long one. Changing it logs out every session. | You choose it. Add it yourself in Vercel → **Settings → Environment Variables**. |
+| `RESEND_API_KEY` | Optional — email alerts | API key for [Resend](https://resend.com), which emails you when a new message arrives. Starts with `re_`. | resend.com → **API Keys** → Create. |
+| `NOTIFY_EMAIL` | Optional — email alerts | Where the alerts go. Several addresses can be separated by commas. | Your email address. |
+| `NOTIFY_FROM` | Optional | Sender shown on alerts. Defaults to `Vika’s Recipes <onboarding@resend.dev>`. Only change it after verifying your own domain in Resend. | — |
 
 The Neon integration also adds other variables (`PGHOST`, `PGUSER`, `POSTGRES_PRISMA_URL`, …). They are not used
 and can be left as they are.
 
-**On Vercel** nothing needs to be typed in by hand — connecting the stores sets the variables for you.
-Remember to redeploy after connecting them.
+**On Vercel** the database and Blob variables are set for you when you connect the stores. `ADMIN_PASSWORD`,
+`RESEND_API_KEY` and `NOTIFY_EMAIL` you add yourself in **Settings → Environment Variables**. Redeploy after any change.
+
+### Inbox (`/admin`)
+
+Open `https://<your-site>/admin` and log in with `ADMIN_PASSWORD`. You can read messages and shared recipes, view the
+photos, reply by email, mark messages as read, archive or delete them (deleting also removes the photos).
+The page isn't linked anywhere on the site and asks search engines not to index it.
+
+### Email alerts
+
+1. Sign up at [resend.com](https://resend.com) **with the same email address you want alerts sent to**. Without your own
+   domain, Resend can only send to the email address of your Resend account.
+2. Create an API key and add `RESEND_API_KEY` and `NOTIFY_EMAIL` (that same address) in Vercel and in `.env.local`.
+3. Redeploy. Each new message sends a summary email with an **Open inbox** button; replying to it answers the sender.
+
+If alerts aren't set up, messages are still saved — you just won't get an email.
 
 **On your computer** (`npm run dev` also runs the `/api` functions), put the same variables in a `.env.local` file
 in the project folder. `.env.example` shows the format. To fill it in, either:

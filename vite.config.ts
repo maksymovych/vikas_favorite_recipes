@@ -25,7 +25,10 @@ function localApi(): Plugin {
           const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
           const request = new Request(`http://${req.headers.host}${req.url}`, {
             method: req.method,
-            headers: { 'content-type': req.headers['content-type'] ?? 'application/json' },
+            headers: {
+              'content-type': req.headers['content-type'] ?? 'application/json',
+              cookie: req.headers.cookie ?? '',
+            },
             body: hasBody ? Buffer.concat(chunks) : undefined,
           })
           const response: Response = await handler(request)

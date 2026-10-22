@@ -1,10 +1,9 @@
 // Saves a contact message (and an optional shared recipe with photos) to Postgres.
 // Needs DATABASE_URL (added automatically when a Neon database is connected in Vercel).
-import { neon } from '@neondatabase/serverless'
+import { BLOB_URL_RE, databaseUrl, db, ensureTable } from './_db'
+import { notifyNewSubmission } from './_notify'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-// Only accept photo links that point to our own Vercel Blob storage
-const BLOB_URL_RE = /^https:\/\/[a-z0-9-]+\.(public|private)\.blob\.vercel-storage\.com\//i
 const MAX_IMAGES = 5
 
 function text(value: unknown, max: number): string {
@@ -16,7 +15,7 @@ function reply(body: object, status = 200): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const dbUrl = process.env.DATABASE_URL ?? process.env.POSTGRES_URL
+  const dbUrl = databaseUrl()
   if (!dbUrl) return reply({ error: 'not_configured' }, 503)
 
   let data: Record<string, unknown>
@@ -51,31 +50,20 @@ export async function POST(request: Request): Promise<Response> {
   if (!entry.message && !entry.recipeName && entry.images.length === 0) return reply({ error: 'empty' }, 400)
 
   try {
-    const sql = neon(dbUrl)
-    await sql`
-      CREATE TABLE IF NOT EXISTS submissions (
-        id                 SERIAL PRIMARY KEY,
-        created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
-        name               TEXT NOT NULL,
-        email              TEXT NOT NULL,
-        message            TEXT,
-        recipe_name        TEXT,
-        recipe_description TEXT,
-        recipe_ingredients TEXT,
-        recipe_steps       TEXT,
-        image_urls         TEXT[] NOT NULL DEFAULT '{}',
-        lang               TEXT,
-        status             TEXT NOT NULL DEFAULT 'new'
-      )`
-    const rows = await sql`
+    const sql = db(dbUrl)
+    await ensureTable(sql)
+    const rows = (await sql`
       INSERT INTO submissions
         (name, email, message, recipe_name, recipe_description, recipe_ingredients, recipe_steps, image_urls, lang)
       VALUES
         (${entry.name}, ${entry.email}, ${entry.message || null}, ${entry.recipeName || null},
          ${entry.recipeDescription || null}, ${entry.recipeIngredients || null}, ${entry.recipeSteps || null},
          ${entry.images}, ${entry.lang})
-      RETURNING id`
-    return reply({ ok: true, id: rows[0]?.id })
+      RETURNING id`) as { id: number }[]
+    const id = rows[0]?.id
+    // Email Vika about it (does nothing if email isn't set up; never blocks saving)
+    await notifyNewSubmission({ id, ...entry, photoCount: entry.images.length }, new URL(request.url).origin)
+    return reply({ ok: true, id })
   } catch (error) {
     console.error('contact: database error', error)
     return reply({ error: 'server' }, 500)

@@ -23,6 +23,7 @@ import { useFilters } from './useFilters'
 
 // Loaded only when someone opens the contact page (keeps the main page fast)
 const ContactPage = lazy(() => import('./pages/ContactPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 
 export default function App() {
   const { d, setLang } = useLang()
@@ -322,6 +323,14 @@ export default function App() {
             element={
               <Suspense fallback={<div className="min-h-[60vh]" />}>
                 <ContactPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <AdminPage />
               </Suspense>
             }
           />
