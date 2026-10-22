@@ -1,0 +1,560 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import type { Category, Cuisine, Difficulty, Season } from './types'
+
+export type Lang = 'en' | 'uk'
+
+/** Ukrainian plural form: 1 рецепт, 2 рецепти, 5 рецептів */
+function ukPlural(n: number, one: string, few: string, many: string) {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return one
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few
+  return many
+}
+
+const ui = {
+  en: {
+    siteName: 'Vika’s',
+    siteNameAccent: 'Recipes',
+    searchLabel: 'Search recipes',
+    searchPlaceholder: 'Search by recipe name or ingredient…',
+    filters: 'Filters',
+    closeFilters: 'Close filters',
+    heroTitle: 'Favourite recipes for every season and celebration',
+    heroText:
+      'From Christmas cookies to Easter paska and summer salads — find something to cook by category, season or what’s in your fridge.',
+    categoriesLabel: 'Categories',
+    allRecipes: 'All recipes',
+    season: 'Season & occasion',
+    cuisine: 'Cuisine',
+    ingredients: 'Ingredients',
+    ingredientsHint: 'Show recipes that use all selected ingredients.',
+    findIngredient: 'Find an ingredient…',
+    noIngredient: 'No ingredient matches.',
+    showFewer: 'Show fewer',
+    showAllIngredients: (n: number) => `Show all ${n} ingredients`,
+    clearAll: 'Clear all filters',
+    recipes: (n: number) => (n === 1 ? 'recipe' : 'recipes'),
+    sort: 'Sort',
+    sortAz: 'A–Z',
+    sortQuickest: 'Quickest',
+    sortEasiest: 'Easiest',
+    noMatchTitle: 'No recipes match',
+    noMatchText: 'Try removing a filter or searching for something else.',
+    clearFilters: 'Clear filters',
+    showRecipes: (n: number) => `Show ${n} ${n === 1 ? 'recipe' : 'recipes'}`,
+    uses: 'Uses:',
+    footer: 'Made with ❤️ in Vika’s kitchen',
+    photosFrom: 'Photos: Wikimedia Commons contributors',
+    prep: 'Prep',
+    cook: 'Cook',
+    noCooking: 'No cooking',
+    serves: 'Serves',
+    difficulty: 'Difficulty',
+    method: 'Method',
+    tips: 'Tips',
+    back: 'Back to recipes',
+    print: 'Print',
+    notFound: 'Recipe not found',
+    notFoundText: 'This recipe may have been renamed or removed.',
+    photo: 'Photo',
+    toDark: 'Switch to dark theme',
+    toLight: 'Switch to light theme',
+    language: 'Language',
+    min: 'min',
+    h: 'h',
+  },
+  uk: {
+    siteName: 'Рецепти',
+    siteNameAccent: 'Віки',
+    searchLabel: 'Пошук рецептів',
+    searchPlaceholder: 'Пошук за назвою чи інгредієнтом…',
+    filters: 'Фільтри',
+    closeFilters: 'Закрити фільтри',
+    heroTitle: 'Улюблені рецепти на кожен сезон і свято',
+    heroText:
+      'Від різдвяного печива до великодньої паски та літніх салатів — знайдіть, що приготувати, за категорією, сезоном або тим, що є в холодильнику.',
+    categoriesLabel: 'Категорії',
+    allRecipes: 'Усі рецепти',
+    season: 'Сезон і свято',
+    cuisine: 'Кухня',
+    ingredients: 'Інгредієнти',
+    ingredientsHint: 'Показати рецепти з усіма вибраними інгредієнтами.',
+    findIngredient: 'Знайти інгредієнт…',
+    noIngredient: 'Нічого не знайдено.',
+    showFewer: 'Показати менше',
+    showAllIngredients: (n: number) => `Показати всі ${n}`,
+    clearAll: 'Скинути всі фільтри',
+    recipes: (n: number) => ukPlural(n, 'рецепт', 'рецепти', 'рецептів'),
+    sort: 'Сортувати',
+    sortAz: 'А–Я',
+    sortQuickest: 'Найшвидші',
+    sortEasiest: 'Найпростіші',
+    noMatchTitle: 'Рецептів не знайдено',
+    noMatchText: 'Спробуйте прибрати фільтр або пошукати щось інше.',
+    clearFilters: 'Скинути фільтри',
+    showRecipes: (n: number) => `Показати ${n} ${ukPlural(n, 'рецепт', 'рецепти', 'рецептів')}`,
+    uses: 'Містить:',
+    footer: 'Зроблено з ❤️ на кухні Віки',
+    photosFrom: 'Фото: автори Wikimedia Commons',
+    prep: 'Підготовка',
+    cook: 'Приготування',
+    noCooking: 'Без готування',
+    serves: 'Порцій',
+    difficulty: 'Складність',
+    method: 'Приготування',
+    tips: 'Поради',
+    back: 'Назад до рецептів',
+    print: 'Друкувати',
+    notFound: 'Рецепт не знайдено',
+    notFoundText: 'Можливо, рецепт перейменовано або видалено.',
+    photo: 'Фото',
+    toDark: 'Темна тема',
+    toLight: 'Світла тема',
+    language: 'Мова',
+    min: 'хв',
+    h: 'год',
+  },
+}
+
+export type UI = (typeof ui)['en']
+
+const categoryUk: Record<Category, string> = {
+  Chicken: 'Курка',
+  Beef: 'Яловичина',
+  Pork: 'Свинина',
+  Seafood: 'Риба й морепродукти',
+  Pasta: 'Паста',
+  Soup: 'Супи',
+  Salad: 'Салати',
+  'One Pot Meals': 'В одній каструлі',
+  Easy: 'Прості',
+  Egg: 'З яйцями',
+  Healthy: 'Корисні',
+  Rice: 'Рис',
+  Vegetarian: 'Вегетаріанські',
+  Breakfast: 'Сніданки',
+  Main: 'Основні страви',
+  Baking: 'Випічка',
+  Dessert: 'Десерти',
+  Drinks: 'Напої',
+  'Basics & Sauces': 'Основи й соуси',
+  Oven: 'У духовці',
+  'Air Fryer': 'Аерогриль',
+  Casserole: 'Запіканки',
+  Grill: 'Гриль',
+  'No-Cook': 'Без варіння',
+}
+
+const seasonUk: Record<Season, string> = {
+  Christmas: 'Різдво',
+  'New Year': 'Новий рік',
+  Easter: 'Великдень',
+  Thanksgiving: 'День подяки',
+  Spring: 'Весна',
+  Summer: 'Літо',
+  Autumn: 'Осінь',
+  Winter: 'Зима',
+  Everyday: 'На щодень',
+}
+
+const cuisineUk: Record<Cuisine, string> = {
+  Ukrainian: 'Українська',
+  Italian: 'Італійська',
+  Georgian: 'Грузинська',
+  American: 'Американська',
+  Greek: 'Грецька',
+  Spanish: 'Іспанська',
+  Uzbek: 'Узбецька',
+  'Middle Eastern': 'Близькосхідна',
+  International: 'Інтернаціональна',
+}
+
+const difficultyUk: Record<Difficulty, string> = { Easy: 'Легко', Medium: 'Середньо', Hard: 'Складно' }
+
+const ingredientUk: Record<string, string> = {
+  almonds: 'мигдаль',
+  anchovies: 'анчоуси',
+  apples: 'яблука',
+  arugula: 'рукола',
+  bacon: 'бекон',
+  'baking soda': 'харчова сода',
+  'balsamic vinegar': 'бальзамічний оцет',
+  basil: 'базилік',
+  'bay leaves': 'лавровий лист',
+  beef: 'яловичина',
+  beets: 'буряк',
+  'bell pepper': 'болгарський перець',
+  berries: 'ягоди',
+  'black pepper': 'чорний перець',
+  bread: 'хліб',
+  breadcrumbs: 'панірувальні сухарі',
+  'brown sugar': 'коричневий цукор',
+  'burger buns': 'булочки для бургерів',
+  butter: 'вершкове масло',
+  cabbage: 'капуста',
+  'candied fruit': 'цукати',
+  'canned tomatoes': 'консервовані томати',
+  carrots: 'морква',
+  cheddar: 'чедер',
+  'chicken breast': 'куряче філе',
+  'chicken stock': 'курячий бульйон',
+  'chicken thighs': 'курячі стегна',
+  cinnamon: 'кориця',
+  cloves: 'гвоздика',
+  cucumber: 'огірок',
+  cumin: 'кмин (зіра)',
+  dill: 'кріп',
+  'dried apricots': 'курага',
+  'dry yeast': 'сухі дріжджі',
+  'egg whites': 'яєчні білки',
+  'egg yolks': 'яєчні жовтки',
+  eggs: 'яйця',
+  'elbow macaroni': 'макарони ріжки',
+  'farmer’s cheese': 'сир кисломолочний',
+  feta: 'фета',
+  flour: 'борошно',
+  'fresh yeast': 'свіжі дріжджі',
+  garlic: 'часник',
+  ginger: 'імбир',
+  'goat cheese': 'козячий сир',
+  'green peas': 'зелений горошок',
+  'ground beef': 'яловичий фарш',
+  'ground pork': 'свинячий фарш',
+  gruyère: 'грюєр',
+  ham: 'шинка',
+  'heavy cream': 'вершки 30%',
+  herring: 'оселедець',
+  honey: 'мед',
+  ice: 'лід',
+  'italian sausage': 'італійські ковбаски',
+  'kalamata olives': 'оливки каламата',
+  kale: 'капуста кейл',
+  ketchup: 'кетчуп',
+  lemon: 'лимон',
+  'lemon juice': 'лимонний сік',
+  lettuce: 'салат латук',
+  mayonnaise: 'майонез',
+  milk: 'молоко',
+  mint: "м'ята",
+  mozzarella: 'моцарела',
+  mustard: 'гірчиця',
+  'mustard powder': 'гірчичний порошок',
+  nutmeg: 'мускатний горіх',
+  'olive oil': 'оливкова олія',
+  onion: 'цибуля',
+  orange: 'апельсин',
+  'orange zest': 'апельсинова цедра',
+  oregano: 'орегано',
+  'pan juices': 'сік від запікання',
+  pancetta: 'панчета',
+  paprika: 'паприка',
+  parmesan: 'пармезан',
+  parsley: 'петрушка',
+  pickles: 'мариновані огірки',
+  'pizza dough': 'тісто для піци',
+  'poppy seeds': 'мак',
+  potatoes: 'картопля',
+  'powdered sugar': 'цукрова пудра',
+  pumpkin: 'гарбуз',
+  'pumpkin seeds': 'гарбузове насіння',
+  raisins: 'родзинки',
+  'red onion': 'червона цибуля',
+  'red pepper flakes': 'пластівці чилі',
+  'red wine': 'червоне вино',
+  rice: 'рис',
+  rosemary: 'розмарин',
+  sage: 'шавлія',
+  salmon: 'лосось',
+  salt: 'сіль',
+  sauerkraut: 'квашена капуста',
+  'sour cream': 'сметана',
+  'soy sauce': 'соєвий соус',
+  spaghetti: 'спагеті',
+  sprinkles: 'кондитерська посипка',
+  'star anise': 'бадьян',
+  strawberries: 'полуниця',
+  sugar: 'цукор',
+  'sunflower oil': 'соняшникова олія',
+  thyme: 'чебрець',
+  'tomato paste': 'томатна паста',
+  tomatoes: 'помідори',
+  'vanilla sugar': 'ванільний цукор',
+  'vegetable stock': 'овочевий бульйон',
+  vinegar: 'оцет',
+  walnuts: 'волоські горіхи',
+  water: 'вода',
+  'wheat berries': 'пшениця (зерно)',
+  'white beans': 'біла квасоля',
+  'whole chicken': 'ціла курка',
+  'whole turkey': 'ціла індичка',
+  'chicken wings': 'курячі крильця',
+  'baking powder': 'розпушувач',
+  'garlic powder': 'часниковий порошок',
+  semolina: 'манна крупа',
+  cornstarch: 'кукурудзяний крохмаль',
+  'digestive biscuits': 'пісочне печиво',
+  'cream cheese': 'вершковий сир',
+  'lemon zest': 'лимонна цедра',
+  mascarpone: 'маскарпоне',
+  ladyfingers: 'печиво савоярді',
+  espresso: 'еспресо',
+  'coffee liqueur': 'кавовий лікер',
+  'cocoa powder': 'какао-порошок',
+}
+
+const noteUk: Record<string, string> = {
+  '+ 2 tbsp for the topping': '+ 2 ст. л. для посипки',
+  '+ extra for coating': '+ трохи для обвалювання',
+  '+ more for the onions': '+ ще для цибулі',
+  '1 for the filling, 4 yolks for the top': '1 у начинку, 4 жовтки зверху',
+  '20% fat': 'жирність 20%',
+  'about 150 g each': 'приблизно по 150 г',
+  beaten: 'збиті',
+  boiling: 'окріп',
+  'boneless, cubed': 'без кісток, кубиками',
+  chopped: 'подрібнений',
+  'cold, or sparkling': 'холодна або газована',
+  'crumbled (or imeruli)': 'розкришена (або імеретинський сир)',
+  'crushed or passata': 'подрібнені або пасата',
+  'cubed, for croutons': 'кубиками, для грінок',
+  'cut into 4 pieces': 'нарізане на 4 шматочки',
+  'cut into thick matchsticks': 'товстою соломкою',
+  diced: 'кубиками',
+  dijon: 'діжонська',
+  'dill pickles': 'з кропом',
+  dried: 'сушений',
+  dry: 'сухе',
+  'extra virgin': 'extra virgin',
+  'finely chopped': 'дрібно нарізана',
+  'finely grated (or pecorino)': 'дрібно натертий (або пекоріно)',
+  'for icing': 'для глазурі',
+  'for the glaze': 'для глазурі',
+  fresh: 'свіжий',
+  'fresh, or burrata': 'свіжа, або буррата',
+  'freshly ground': 'свіжомелений',
+  'fully thawed': 'повністю розморожена',
+  grated: 'натертий',
+  'grated (or mozzarella)': 'натертий (або моцарела)',
+  'grated (or sulguni)': 'натерта (або сулугуні)',
+  ground: 'мелений',
+  'half-cooked': 'напівготовий',
+  halved: 'навпіл',
+  hot: 'гарячий',
+  juiced: 'сік',
+  'long-grain, rinsed until clear': 'довгозернистий, промитий до чистої води',
+  lukewarm: 'тепла',
+  melted: 'розтоплене',
+  'melted and cooled': 'розтоплене й охолоджене',
+  minced: 'подрібнений',
+  'on the bone': 'на кістці',
+  optional: 'за бажанням',
+  'optional glaze': 'за бажанням, крем-бальзамік',
+  'optional, chopped': 'за бажанням, нарізана',
+  'optional, for colour': 'за бажанням, для кольору',
+  'optional, grilled': 'за бажанням, на грилі',
+  'optional, mix with arugula': 'за бажанням, змішати з руколою',
+  'or 15 g dry yeast': 'або 15 г сухих',
+  'or boiled chicken': 'або варена курка',
+  'or feta': 'або фета',
+  'or green onion': 'або зелена цибуля',
+  'or green peas': 'або зелений горошок',
+  'or guanciale, diced': 'або гуанчале, кубиками',
+  'or jam': 'або варення',
+  'or lemon juice': 'або лимонний сік',
+  'or lettuce / mixed leaves': 'або латук / мікс салатів',
+  'or molasses': 'або меляса',
+  'or pork & beef': 'або свинина з яловичиною',
+  'or ready-cooked': 'або вже варений',
+  'or skip for a raw-egg-free version': 'можна без них',
+  'or sugar': 'або цукор',
+  'panko works best': 'найкраще панко',
+  'peeled, cubed': 'очищений, кубиками',
+  quartered: 'на четвертинки',
+  ripe: 'стиглі',
+  romaine: 'ромен',
+  'russet, sliced 5 mm thick': 'скибочками по 5 мм',
+  'salted, finely diced': 'солоний, дрібними кубиками',
+  'see Homemade Pizza Dough': 'див. «Домашнє тісто для піци»',
+  seeds: 'насіння',
+  'sharp, grated': 'витриманий, натертий',
+  shaved: 'стружкою',
+  'sherry vinegar': 'хересний оцет',
+  shredded: 'нашаткована',
+  'sifted, plus extra': 'просіяне, плюс трохи для підсипання',
+  sliced: 'скибочками',
+  smoked: 'копчена',
+  'soaked and dried': 'замочені й обсушені',
+  'soaked overnight': 'замочена на ніч',
+  soft: "м'яке",
+  'spicy or mild, casings removed': 'гострі або ні, без оболонки',
+  'stale, crusts removed': 'черствий, без скоринки',
+  'stems removed, chopped': 'без стебел, нарізана',
+  tart: 'кислі',
+  'thinly sliced': 'тонко нарізана',
+  'tipo 00 or bread flour': 'тип 00 або хлібне',
+  toasted: 'підсмажене',
+  'torn and well drained': 'порвана й обсушена',
+  tvorog: 'домашній',
+  'tvorog, well drained': 'добре відціджений',
+  unrefined: 'нерафінована',
+  'very ripe': 'дуже стиглі',
+  warm: 'тепле',
+  whole: 'цілий',
+  'patted dry': 'обсушені',
+  'not baking soda': 'не сода',
+  'cut into wedges': 'часточками',
+  '+ more to serve': '+ ще для подачі',
+  'or milk': 'або молоко',
+  'for the pastry': 'для тіста',
+  'very cold, for the pastry': 'дуже холодне, для тіста',
+  'ice-cold': 'крижана',
+  'for the custard': 'для крему',
+  'whipped, optional': 'збиті, за бажанням',
+  'or graham crackers': 'або крекери',
+  'full-fat, at room temperature': 'жирний, кімнатної температури',
+  'at room temperature': 'кімнатної температури',
+  cold: 'холодний',
+  'very fresh': 'дуже свіжі',
+  savoiardi: 'савоярді',
+  'strong, cooled': 'міцне, охолоджене',
+  'optional, or marsala': 'за бажанням, або марсала',
+  'for dusting': 'для посипання',
+}
+
+const amountPhraseUk: Record<string, string> = {
+  'to taste': 'за смаком',
+  'flaky, to taste': 'пластівцями, за смаком',
+  'to serve': 'для подачі',
+  'to decorate': 'для декору',
+  'to dust': 'для посипання',
+  'for frying': 'для смаження',
+  'for the pasta water': 'для води',
+  'for the tin': 'для форми',
+  'from the roast turkey': 'від запеченої індички',
+  'a pinch': 'дрібка',
+  'a handful': 'жменя',
+  'a few sprigs': 'кілька гілочок',
+  'a small bunch': 'невеликий пучок',
+  '1 large head': '1 великий качан',
+  '1 small head': '1 невеликий качан',
+  '¼ head': '¼ качана',
+  '2 heads': '2 качани',
+}
+
+const unitUk: Record<string, string> = {
+  g: 'г',
+  kg: 'кг',
+  ml: 'мл',
+  l: 'л',
+  tbsp: 'ст. л.',
+  tsp: 'ч. л.',
+  clove: 'зубчик',
+  cloves: 'зубчики',
+  head: 'головка',
+  heads: 'головки',
+  slice: 'скибочка',
+  slices: 'скибочки',
+  sprig: 'гілочка',
+  sprigs: 'гілочки',
+  sticks: 'палички',
+  fillets: 'філе',
+  leaves: 'листки',
+  ball: 'кулька',
+  bunch: 'пучок',
+  can: 'банка',
+  large: 'великі',
+  medium: 'середні',
+  small: 'невелика',
+  ripe: 'стиглі',
+  whole: 'цілих',
+  green: 'зелений',
+  red: 'червоний',
+  orange: 'апельсин',
+  lemon: 'лимон',
+}
+
+function translateAmount(amount: string): string {
+  if (amountPhraseUk[amount]) return amountPhraseUk[amount]
+  // Translate each word that is a known unit, keep numbers and symbols as they are
+  return amount
+    .split(' ')
+    .map((word) => {
+      const clean = word.replace(/[()]/g, '')
+      const tr = unitUk[clean]
+      return tr ? word.replace(clean, tr) : word
+    })
+    .join(' ')
+    .replace(/(\d)\.(\d)/g, '$1,$2')
+}
+
+function translateServings(s: string): string {
+  return s
+    .replace('pizzas', 'піци')
+    .replace('pizza', 'піца')
+    .replace('medium paskas', 'середні паски')
+    .replace('cookies', 'печива')
+    .replace('boats', 'човники')
+    .replace('cm', 'см')
+}
+
+export function makeDict(lang: Lang) {
+  const isUk = lang === 'uk'
+  return {
+    lang,
+    t: ui[lang],
+    category: (c: Category) => (isUk ? categoryUk[c] : c),
+    season: (s: Season) => (isUk ? seasonUk[s] : s),
+    cuisine: (c: Cuisine) => (isUk ? cuisineUk[c] : c),
+    difficulty: (d: Difficulty) => (isUk ? difficultyUk[d] : d),
+    ingredient: (name: string) => (isUk ? (ingredientUk[name] ?? name) : name),
+    note: (note: string) => (isUk ? (noteUk[note] ?? note) : note),
+    amount: (amount: string) => (isUk ? translateAmount(amount) : amount),
+    servings: (s: string) => (isUk ? translateServings(s) : s),
+    time: (minutes: number) => {
+      const t = ui[lang]
+      if (minutes < 60) return `${minutes} ${t.min}`
+      const h = Math.floor(minutes / 60)
+      const m = minutes % 60
+      return m ? `${h} ${t.h} ${m} ${t.min}` : `${h} ${t.h}`
+    },
+  }
+}
+
+export type Dict = ReturnType<typeof makeDict>
+
+const LANG_KEY = 'recipes-lang'
+
+function initialLang(): Lang {
+  try {
+    const saved = localStorage.getItem(LANG_KEY)
+    if (saved === 'en' || saved === 'uk') return saved
+  } catch {
+    /* storage unavailable */
+  }
+  return navigator.language?.toLowerCase().startsWith('uk') ? 'uk' : 'en'
+}
+
+const LangContext = createContext<{ d: Dict; setLang: (l: Lang) => void } | null>(null)
+
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>(initialLang)
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.title = lang === 'uk' ? 'Рецепти Віки' : 'Vika’s Recipes'
+    try {
+      localStorage.setItem(LANG_KEY, lang)
+    } catch {
+      /* storage unavailable */
+    }
+  }, [lang])
+
+  return <LangContext.Provider value={{ d: makeDict(lang), setLang }}>{children}</LangContext.Provider>
+}
+
+export function useLang() {
+  const ctx = useContext(LangContext)
+  if (!ctx) throw new Error('useLang must be used inside LangProvider')
+  return ctx
+}

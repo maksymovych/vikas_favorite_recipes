@@ -2,11 +2,11 @@
 
 A responsive recipe site (phone, tablet, desktop) built with Vite, React, TypeScript and Tailwind CSS.
 
-- Search by recipe name or ingredient
-- Filter by category (Pasta, Main, Soup, Salad, Baking, Dessert, Breakfast, Drinks)
-- Filter by season / occasion (Christmas, New Year, Easter, Summer, …)
-- Filter by ingredients (shows recipes that use all selected ingredients)
-- Recipe view with an ingredient checklist and numbered steps
+- English / Українська language switch and light / dark theme (both remembered per browser)
+- Search by recipe name or ingredient (works in both languages)
+- Categories: course, main ingredient (chicken, beef, pork, seafood…), cooking method (oven, air fryer, casserole…) and diet
+- Filters: season / occasion (Christmas, Easter, Summer…), cuisine, and ingredients
+- Recipe view with a real photo, ingredient checklist and numbered steps
 
 ## Run locally
 
@@ -17,8 +17,17 @@ npm run dev
 
 ## Add a recipe
 
-Open `src/data/recipes.ts`, copy an existing recipe object, give it a unique `id` and fill in the fields.
-Categories and seasons are listed in `src/types.ts`.
+1. `src/data/recipes.ts` — copy an existing recipe, give it a unique `id` and fill in the fields.
+   Categories, cuisines and seasons are listed in `src/types.ts`.
+2. `src/data/recipes.uk.ts` — add the Ukrainian title, description and steps under the same `id`.
+   New ingredient names or notes go in `src/i18n.tsx` (`ingredientUk` / `noteUk`).
+3. Photo (optional): put a `.jpg` in `public/images/` named after the `id`, and add it to `src/data/photos.ts`.
+   Without a photo the card shows the recipe emoji.
+
+## Photos
+
+Recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
+(CC0, CC BY, CC BY-SA, public domain). Each recipe page credits the author and license with a link to the original.
 
 ## Deploy
 

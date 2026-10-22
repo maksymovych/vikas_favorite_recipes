@@ -1,9 +1,13 @@
 @import 'tailwindcss';
 
+/* Dark mode is switched by adding the `dark` class to <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Fraunces', ui-serif, Georgia, serif;
   --color-cream: #fbf7f1;
+  --color-surface: #ffffff;
   --color-terracotta: #c4552d;
   --color-olive: #5f7a3a;
 
@@ -20,6 +24,25 @@
   }
 }
 
+/* Dark theme: flip the neutral "stone" scale so existing classes adapt automatically */
+.dark {
+  color-scheme: dark;
+  --color-cream: #161311;
+  --color-surface: #221e1b;
+  --color-terracotta: #e07a52;
+  --color-olive: #9bbb68;
+  --color-stone-50: #1c1917;
+  --color-stone-100: #292524;
+  --color-stone-200: #3a3532;
+  --color-stone-300: #57534e;
+  --color-stone-400: #8a847f;
+  --color-stone-500: #a8a29e;
+  --color-stone-600: #c4beb9;
+  --color-stone-700: #dcd7d3;
+  --color-stone-800: #ece9e6;
+  --color-stone-900: #f7f5f3;
+}
+
 html {
   -webkit-tap-highlight-color: transparent;
 }
@@ -27,4 +50,22 @@ html {
 body {
   background: var(--color-cream);
   font-family: var(--font-sans);
+  transition: background-color 0.2s ease;
+}
+
+/* Every clickable control shows the hand cursor */
+button:not(:disabled),
+[role='button'],
+select,
+summary,
+label:has(input[type='checkbox']),
+input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

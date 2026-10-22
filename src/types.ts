@@ -1,15 +1,39 @@
-export const CATEGORIES = [
-  'Pasta',
-  'Main',
-  'Soup',
-  'Salad',
-  'Baking',
-  'Dessert',
-  'Breakfast',
-  'Drinks',
-  'Basics & Sauces',
+/** Categories are shown in groups (course → main ingredient → cooking method → diet). */
+export const CATEGORY_GROUPS = [
+  ['Main', 'Soup', 'Salad', 'Pasta', 'Baking', 'Dessert', 'Breakfast', 'Drinks', 'Basics & Sauces'],
+  ['Chicken', 'Beef', 'Pork', 'Seafood', 'Egg', 'Rice'],
+  ['Oven', 'Air Fryer', 'Casserole', 'One Pot Meals', 'Grill', 'No-Cook'],
+  ['Easy', 'Healthy', 'Vegetarian'],
 ] as const
-export type Category = (typeof CATEGORIES)[number]
+export type Category = (typeof CATEGORY_GROUPS)[number][number]
+export const CATEGORIES: readonly Category[] = CATEGORY_GROUPS.flat()
+
+export const CATEGORY_ICONS: Record<Category, string> = {
+  Main: '🍽️',
+  Soup: '🍲',
+  Salad: '🥗',
+  Pasta: '🍝',
+  Baking: '🥖',
+  Dessert: '🍰',
+  Breakfast: '🥞',
+  Drinks: '🍹',
+  'Basics & Sauces': '🫙',
+  Chicken: '🍗',
+  Beef: '🥩',
+  Pork: '🥓',
+  Seafood: '🐟',
+  Egg: '🥚',
+  Rice: '🍚',
+  Oven: '🔥',
+  'Air Fryer': '🌀',
+  Casserole: '🥘',
+  'One Pot Meals': '🍳',
+  Grill: '🍖',
+  'No-Cook': '🥒',
+  Easy: '⚡',
+  Healthy: '💚',
+  Vegetarian: '🌱',
+}
 
 export const CUISINES = [
   'Ukrainian',
@@ -18,6 +42,8 @@ export const CUISINES = [
   'American',
   'Greek',
   'Spanish',
+  'Uzbek',
+  'Middle Eastern',
   'International',
 ] as const
 export type Cuisine = (typeof CUISINES)[number]
@@ -38,7 +64,7 @@ export type Season = (typeof SEASONS)[number]
 export type Difficulty = 'Easy' | 'Medium' | 'Hard'
 
 export interface Ingredient {
-  /** Short, lowercase name used for filtering, e.g. "egg yolks" */
+  /** Short, lowercase English name used for filtering, e.g. "egg yolks" */
   name: string
   /** Quantity shown to the reader, e.g. "4" or "200 g" */
   amount: string
@@ -50,7 +76,8 @@ export interface Recipe {
   title: string
   description: string
   emoji: string
-  category: Category
+  /** First category is the main one (shown on the card); the rest are extra tags. */
+  categories: Category[]
   cuisine: Cuisine
   seasons: Season[]
   prepMinutes: number
@@ -63,6 +90,13 @@ export interface Recipe {
   credit?: string
 }
 
+export interface Photo {
+  src: string
+  author: string
+  license: string
+  sourceUrl: string
+}
+
 export const SEASON_ICONS: Record<Season, string> = {
   Christmas: '🎄',
   'New Year': '🎆',
@@ -73,16 +107,4 @@ export const SEASON_ICONS: Record<Season, string> = {
   Autumn: '🍂',
   Winter: '❄️',
   Everyday: '🍽️',
-}
-
-export const CATEGORY_STYLES: Record<Category, string> = {
-  Pasta: 'from-amber-200 to-orange-300',
-  Main: 'from-rose-200 to-red-300',
-  Soup: 'from-red-200 to-fuchsia-300',
-  Salad: 'from-lime-200 to-emerald-300',
-  Baking: 'from-yellow-100 to-amber-300',
-  Dessert: 'from-pink-200 to-rose-300',
-  Breakfast: 'from-orange-100 to-yellow-300',
-  Drinks: 'from-sky-200 to-indigo-300',
-  'Basics & Sauces': 'from-stone-200 to-amber-200',
 }
