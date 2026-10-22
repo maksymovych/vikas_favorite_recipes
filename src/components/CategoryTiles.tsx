@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useLang } from '../i18n'
 import { CATEGORIES, CATEGORY_ICONS, type Category } from '../types'
 
-const PRIMARY: Category[] = ['Main', 'Soup', 'Salad', 'Pasta', 'Baking', 'Dessert']
+const PRIMARY: Category[] = ['Main', 'Borscht', 'Soup', 'Salad', 'Baking', 'Dessert']
 
 interface Props {
   value: Category | null

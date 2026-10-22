@@ -198,7 +198,7 @@ export const recipes: Recipe[] = [
     title: 'Ukrainian Borscht',
     description: 'Deep red beet soup with beef, cabbage and potatoes, served with sour cream and dill.',
     emoji: '🍲',
-    categories: ['Soup', 'Beef', 'One Pot Meals'],
+    categories: ['Borscht', 'Soup', 'Beef', 'One Pot Meals'],
     cuisine: 'Ukrainian',
     seasons: ['Autumn', 'Winter', 'Everyday'],
     prepMinutes: 30,

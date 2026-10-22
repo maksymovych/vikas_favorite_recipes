@@ -1,6 +1,6 @@
 /** Categories are shown in groups (course → main ingredient → cooking method → diet). */
 export const CATEGORY_GROUPS = [
-  ['Main', 'Sides', 'Soup', 'Salad', 'Pasta', 'Baking', 'Dessert', 'Breakfast', 'Drinks', 'Basics & Sauces'],
+  ['Main', 'Borscht', 'Sides', 'Soup', 'Salad', 'Pasta', 'Baking', 'Dessert', 'Breakfast', 'Drinks', 'Basics & Sauces'],
   ['Chicken', 'Beef', 'Pork', 'Seafood', 'Egg', 'Rice'],
   ['Oven', 'Air Fryer', 'Casserole', 'One Pot Meals', 'Grill', 'No-Cook'],
   ['Easy', 'Healthy', 'Vegetarian'],
@@ -10,6 +10,7 @@ export const CATEGORIES: readonly Category[] = CATEGORY_GROUPS.flat()
 
 export const CATEGORY_ICONS: Record<Category, string> = {
   Main: '🍽️',
+  Borscht: '🥣',
   Sides: '🥔',
   Soup: '🍲',
   Salad: '🥗',

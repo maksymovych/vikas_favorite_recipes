@@ -198,6 +198,7 @@ const categoryUk: Record<Category, string> = {
   Vegetarian: 'Вегетаріанські',
   Breakfast: 'Сніданки',
   Main: 'Основні страви',
+  Borscht: 'Борщ',
   Sides: 'Гарніри',
   Baking: 'Випічка',
   Dessert: 'Десерти',
