@@ -7,7 +7,7 @@ import { useLang } from '../i18n'
 import type { LocalRecipe } from '../localize'
 import { CATEGORY_GROUPS, SEASON_ICONS, type Category } from '../types'
 
-const BADGE_COLORS = ['bg-terracotta', 'bg-rose-600', 'bg-amber-600', 'bg-emerald-600']
+const BADGE_COLORS = ['bg-accent', 'bg-sky-600', 'bg-emerald-600', 'bg-violet-500']
 
 function badgeColor(c: Category) {
   const group = CATEGORY_GROUPS.findIndex((g) => (g as readonly Category[]).includes(c))
@@ -37,7 +37,7 @@ export function FavoriteButton({ id, className = '' }: { id: string; className?:
       title={on ? d.t.removeFavorite : d.t.addFavorite}
       className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-stone-800 shadow-md backdrop-blur transition hover:scale-110 dark:bg-black/55 dark:text-white ${className}`}
     >
-      <Heart size={18} className={on ? 'fill-terracotta text-terracotta' : ''} strokeWidth={2.2} />
+      <Heart size={18} className={on ? 'fill-accent text-accent' : ''} strokeWidth={2.2} />
     </button>
   )
 }
@@ -52,7 +52,7 @@ export default function RecipeCard({ recipe, onOpen, highlight = [] }: Props) {
   const festive = recipe.seasons.filter((s) => s !== 'Everyday').slice(0, 3)
 
   return (
-    <article className="group relative aspect-[5/4] overflow-hidden rounded-3xl bg-gradient-to-br from-amber-100 to-orange-200 shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:from-stone-200 dark:to-stone-300">
+    <article className="group relative aspect-[5/4] overflow-hidden rounded-3xl bg-gradient-to-br from-teal-50 to-cyan-100 shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:from-stone-200 dark:to-stone-300">
       <span className="absolute inset-0 flex items-center justify-center text-6xl" aria-hidden>
         {recipe.emoji}
       </span>
@@ -74,7 +74,7 @@ export default function RecipeCard({ recipe, onOpen, highlight = [] }: Props) {
       <Link
         to={`/recipe/${recipe.id}`}
         onClick={onOpen}
-        className="absolute inset-0 z-10 rounded-3xl focus-visible:ring-4 focus-visible:ring-terracotta focus-visible:outline-none"
+        className="absolute inset-0 z-10 rounded-3xl focus-visible:ring-4 focus-visible:ring-accent focus-visible:outline-none"
       >
         <span className="sr-only">{recipe.title}</span>
       </Link>

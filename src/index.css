@@ -6,11 +6,12 @@
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Fraunces', ui-serif, Georgia, serif;
-  --color-cream: #fdf8f3;
+  --font-script: 'Pacifico', cursive;
+  --color-cream: #f3fafa;
   --color-surface: #ffffff;
-  --color-peach: #fdeadf;
-  --color-terracotta: #e2672b;
-  --color-olive: #5f7a3a;
+  --color-accent-soft: #dff3f3;
+  --color-accent: #0e8f95;
+  --color-olive: #3d8a5a;
 
   --animate-slide-up: slide-up 0.25s ease-out;
   @keyframes slide-up {
@@ -28,11 +29,11 @@
 /* Dark theme: flip the neutral "stone" scale so existing classes adapt automatically */
 .dark {
   color-scheme: dark;
-  --color-cream: #161311;
-  --color-surface: #221e1b;
-  --color-peach: #3a2519;
-  --color-terracotta: #f07a3e;
-  --color-olive: #9bbb68;
+  --color-cream: #0f1617;
+  --color-surface: #182223;
+  --color-accent-soft: #123536;
+  --color-accent: #17a3a7;
+  --color-olive: #6cc28c;
   --color-stone-50: #1c1917;
   --color-stone-100: #292524;
   --color-stone-200: #3a3532;

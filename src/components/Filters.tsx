@@ -18,7 +18,7 @@ interface Props {
 }
 
 const VISIBLE_INGREDIENTS = 16
-const heading = 'mb-3 text-xs font-semibold tracking-[0.12em] text-terracotta uppercase'
+const heading = 'mb-3 text-xs font-semibold tracking-[0.12em] text-accent uppercase'
 
 function Row({
   active,
@@ -40,7 +40,7 @@ function Row({
         onClick={onClick}
         aria-pressed={active}
         className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] transition ${
-          active ? 'bg-peach font-semibold text-stone-900' : 'text-stone-700 hover:bg-stone-100'
+          active ? 'bg-accent-soft font-semibold text-stone-900' : 'text-stone-700 hover:bg-stone-100'
         }`}
       >
         {icon && (
@@ -50,7 +50,7 @@ function Row({
         )}
         <span className="flex-1">{label}</span>
         {active ? (
-          <Check size={16} className="text-terracotta" />
+          <Check size={16} className="text-accent" />
         ) : (
           <span className="text-sm text-stone-400">{count}</span>
         )}
@@ -111,7 +111,7 @@ export default function Filters(props: Props) {
       </section>
 
       <section>
-        <h3 className="mb-1 text-xs font-semibold tracking-[0.12em] text-terracotta uppercase">{d.t.ingredients}</h3>
+        <h3 className="mb-1 text-xs font-semibold tracking-[0.12em] text-accent uppercase">{d.t.ingredients}</h3>
         <p className="mb-3 text-xs text-stone-500">{d.t.ingredientsHint}</p>
         <label className="relative mb-3 block">
           <Search size={16} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-stone-400" />
@@ -120,7 +120,7 @@ export default function Filters(props: Props) {
             value={ingredientQuery}
             onChange={(e) => setIngredientQuery(e.target.value)}
             placeholder={d.t.findIngredient}
-            className="w-full rounded-xl border border-stone-200 bg-surface py-2 pr-3 pl-9 text-sm text-stone-800 outline-none placeholder:text-stone-400 focus:border-terracotta focus:ring-2 focus:ring-terracotta/20"
+            className="w-full rounded-xl border border-stone-200 bg-surface py-2 pr-3 pl-9 text-sm text-stone-800 outline-none placeholder:text-stone-400 focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -150,7 +150,7 @@ export default function Filters(props: Props) {
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="mt-3 text-sm font-medium text-terracotta hover:underline"
+            className="mt-3 text-sm font-medium text-accent hover:underline"
           >
             {showAll ? d.t.showFewer : d.t.showAllIngredients(matchingIngredients.length)} →
           </button>

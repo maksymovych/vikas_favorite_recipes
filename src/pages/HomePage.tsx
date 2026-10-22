@@ -182,7 +182,7 @@ export default function HomePage({ f }: Props) {
                   value={f.query}
                   onChange={(e) => f.setQuery(e.target.value)}
                   placeholder={d.t.heroSearch}
-                  className="w-full rounded-2xl border border-stone-200 bg-surface py-3.5 pr-12 pl-12 text-base text-stone-800 shadow-sm outline-none placeholder:text-stone-400 focus:border-terracotta focus:ring-4 focus:ring-terracotta/15"
+                  className="w-full rounded-2xl border border-stone-200 bg-surface py-3.5 pr-12 pl-12 text-base text-stone-800 shadow-sm outline-none placeholder:text-stone-400 focus:border-accent focus:ring-4 focus:ring-accent/15"
                 />
                 {f.query && (
                   <button
@@ -200,7 +200,7 @@ export default function HomePage({ f }: Props) {
                 type="button"
                 onClick={surprise}
                 title={d.t.surpriseHint}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-terracotta px-6 py-3.5 font-semibold text-white shadow-md shadow-orange-600/20 transition hover:-translate-y-0.5 hover:shadow-lg"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-6 py-3.5 font-semibold text-white shadow-md shadow-teal-700/20 transition hover:-translate-y-0.5 hover:shadow-lg"
               >
                 <Sparkles size={18} /> {d.t.surprise}
               </button>
@@ -219,7 +219,7 @@ export default function HomePage({ f }: Props) {
                 >
                   <SlidersHorizontal size={16} /> {d.t.filters}
                   {f.activeCount > 0 && (
-                    <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1 text-xs text-white">
+                    <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs text-white">
                       {f.activeCount}
                     </span>
                   )}
@@ -229,7 +229,7 @@ export default function HomePage({ f }: Props) {
                   <select
                     value={sort}
                     onChange={(e) => setSort(e.target.value as typeof sort)}
-                    className="appearance-none rounded-xl border border-stone-200 bg-surface py-2 pr-9 pl-3.5 text-sm text-stone-800 shadow-sm outline-none focus:border-terracotta"
+                    className="appearance-none rounded-xl border border-stone-200 bg-surface py-2 pr-9 pl-3.5 text-sm text-stone-800 shadow-sm outline-none focus:border-accent"
                   >
                     <option value="az">
                       {d.t.sort}: {d.t.sortAz}
@@ -281,7 +281,7 @@ export default function HomePage({ f }: Props) {
                 <button
                   type="button"
                   onClick={f.clearAll}
-                  className="mt-5 rounded-xl bg-terracotta px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+                  className="mt-5 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
                 >
                   {d.t.viewAll}
                 </button>
@@ -311,7 +311,7 @@ export default function HomePage({ f }: Props) {
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="w-full rounded-xl bg-terracotta py-3 font-semibold text-white"
+                className="w-full rounded-xl bg-accent py-3 font-semibold text-white"
               >
                 {d.t.showRecipes(filtered.length)}
               </button>

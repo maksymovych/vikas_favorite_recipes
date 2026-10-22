@@ -66,7 +66,7 @@ export default function RecipePage() {
         <p className="mt-2 text-stone-600">{d.t.notFoundText}</p>
         <Link
           to="/"
-          className="mt-6 inline-block rounded-xl bg-terracotta px-5 py-2.5 font-medium text-white hover:opacity-90"
+          className="mt-6 inline-block rounded-xl bg-accent px-5 py-2.5 font-medium text-white hover:opacity-90"
         >
           {d.t.back}
         </Link>
@@ -95,7 +95,7 @@ export default function RecipePage() {
       </div>
 
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-100 to-orange-200 shadow-2xl shadow-orange-900/10 dark:from-stone-200 dark:to-stone-300 print:hidden">
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-teal-50 to-cyan-100 shadow-2xl shadow-teal-900/10 dark:from-stone-200 dark:to-stone-300 print:hidden">
         <div className="aspect-[4/3] sm:aspect-[21/9]">
           {photo ? (
             <img src={photo.src} alt={recipe.title} className="h-full w-full object-cover" />
@@ -208,7 +208,7 @@ export default function RecipePage() {
           <ol className="space-y-5 print:space-y-3">
             {recipe.steps.map((step, i) => (
               <li key={i} className="flex gap-4 break-inside-avoid">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracotta text-sm font-semibold text-white print:h-6 print:w-6 print:border print:border-stone-800 print:bg-transparent print:text-stone-900">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-white print:h-6 print:w-6 print:border print:border-stone-800 print:bg-transparent print:text-stone-900">
                   {i + 1}
                 </span>
                 <p className="pt-1 leading-relaxed text-stone-800 print:pt-0">{step}</p>

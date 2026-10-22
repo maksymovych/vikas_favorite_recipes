@@ -55,7 +55,7 @@ export default function App() {
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[15px] font-medium transition ${
-        active ? 'bg-peach text-terracotta' : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+        active ? 'bg-accent-soft text-accent' : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
       }`}
     >
       {icon}
@@ -67,16 +67,16 @@ export default function App() {
     <div className="flex min-h-dvh flex-col bg-cream text-stone-800 print:bg-white">
       {/* Soft warm glow behind the top of the page */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[640px] bg-[radial-gradient(ellipse_at_top_left,var(--color-peach),transparent_60%)] opacity-70 print:hidden"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[640px] bg-[radial-gradient(ellipse_at_top_left,var(--color-accent-soft),transparent_60%)] opacity-70 print:hidden"
         aria-hidden
       />
 
       <header className="sticky top-0 z-30 border-b border-stone-200/60 bg-cream/85 backdrop-blur-md print:hidden">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:gap-6 lg:px-8">
           <Link to="/" onClick={f.clearAll} className="flex shrink-0 items-center gap-2">
-            <CookingPot size={30} className="text-terracotta" strokeWidth={2.2} />
+            <CookingPot size={30} className="text-accent" strokeWidth={2.2} />
             <span className="font-display text-xl leading-none font-bold text-stone-900 sm:text-[1.7rem]">
-              {d.t.siteName} <span className="text-terracotta">{d.t.siteNameAccent}</span>
+              {d.t.siteName} <span className="text-accent">{d.t.siteNameAccent}</span>
             </span>
           </Link>
 
@@ -117,12 +117,12 @@ export default function App() {
               aria-label={d.t.navFavorites}
               title={d.t.navFavorites}
               className={`relative flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-stone-100 ${
-                f.favoritesOnly ? 'bg-peach text-terracotta' : 'text-stone-800'
+                f.favoritesOnly ? 'bg-accent-soft text-accent' : 'text-stone-800'
               }`}
             >
-              <Heart size={21} className={fav.ids.length ? 'fill-terracotta text-terracotta' : ''} />
+              <Heart size={21} className={fav.ids.length ? 'fill-accent text-accent' : ''} />
               {fav.ids.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-terracotta px-1 text-[11px] font-semibold text-white">
+                <span className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-white">
                   {fav.ids.length}
                 </span>
               )}
@@ -140,7 +140,7 @@ export default function App() {
                   onClick={() => setLang(l)}
                   aria-pressed={d.lang === l}
                   className={`rounded-full px-2.5 py-1.5 transition ${
-                    d.lang === l ? 'bg-terracotta text-white' : 'text-stone-600 hover:text-stone-900'
+                    d.lang === l ? 'bg-accent text-white' : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
                   {l === 'en' ? 'EN' : 'УК'}
@@ -171,7 +171,7 @@ export default function App() {
 
       <footer className="relative border-t border-stone-200/70 py-8 text-center text-sm text-stone-500 print:hidden">
         <p className="inline-flex items-center gap-2">
-          <CookingPot size={18} className="text-terracotta" /> {d.t.footer}
+          <CookingPot size={18} className="text-accent" /> {d.t.footer}
         </p>
         <p className="mt-1 text-xs text-stone-400">{d.t.photosFrom}</p>
       </footer>

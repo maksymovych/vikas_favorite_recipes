@@ -24,22 +24,22 @@ export default function CategoryTiles({ value, onChange, counts, total }: Props)
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex min-w-[150px] shrink-0 items-center gap-3 ${showAll ? "" : "lg:min-w-0"} rounded-2xl border px-3 py-2.5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`flex min-w-[150px] shrink-0 items-center gap-3 ${showAll ? "" : "lg:min-w-0"} rounded-2xl border px-3 py-2.5 text-left transition hover:-translate-y-0.5 lg:gap-2 lg:px-2.5 hover:shadow-md ${
         active
-          ? 'border-terracotta bg-peach/60 shadow-sm ring-1 ring-terracotta'
+          ? 'border-accent bg-accent-soft/60 shadow-sm ring-1 ring-accent'
           : 'border-stone-200/80 bg-surface hover:border-stone-300'
       }`}
     >
       <span
-        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl ${
-          active ? 'bg-surface' : 'bg-peach'
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl lg:h-9 lg:w-9 lg:text-xl ${
+          active ? 'bg-surface' : 'bg-accent-soft'
         }`}
         aria-hidden
       >
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-stone-900">{label}</span>
+        <span className="line-clamp-2 block text-sm leading-tight font-semibold text-stone-900">{label}</span>
         <span className="block text-xs text-stone-500">{sub}</span>
       </span>
     </button>
@@ -61,7 +61,7 @@ export default function CategoryTiles({ value, onChange, counts, total }: Props)
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className={`flex min-w-[130px] shrink-0 items-center gap-3 ${showAll ? "" : "lg:min-w-0"} rounded-2xl border border-dashed border-stone-300 bg-transparent px-3 py-2.5 text-left transition hover:border-terracotta hover:bg-surface`}
+          className={`flex min-w-[130px] shrink-0 items-center gap-3 ${showAll ? "" : "lg:min-w-0"} rounded-2xl border border-dashed border-stone-300 bg-transparent px-3 py-2.5 text-left transition hover:border-accent hover:bg-surface`}
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-xl text-stone-700">
             {showAll ? <X size={22} /> : <LayoutGrid size={22} />}
