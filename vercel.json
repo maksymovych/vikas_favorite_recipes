@@ -2,5 +2,5 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!images/|assets/|favicon).*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/((?!api/|images/|assets/|favicon).*)", "destination": "/index.html" }]
 }

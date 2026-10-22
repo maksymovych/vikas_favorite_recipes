@@ -29,6 +29,29 @@ npm run dev
 Recipe photos come from [Wikimedia Commons](https://commons.wikimedia.org) under free licenses
 (CC0, CC BY, CC BY-SA, public domain). Each recipe page credits the author and license with a link to the original.
 
+## Contact form (database + photo uploads)
+
+The contact page (`/contact`) saves messages and shared recipes to a Postgres database, and photos to Vercel Blob.
+Code: `api/contact.ts` (saves the form) and `api/upload.ts` (lets the browser upload photos).
+
+One-time setup in the Vercel dashboard → your project → **Storage**:
+
+1. **Create Database → Neon (Postgres)** → connect it to this project. This adds `DATABASE_URL`.
+2. **Create → Blob** → connect it to this project. This adds `BLOB_READ_WRITE_TOKEN`.
+3. **Redeploy** (Deployments → ⋯ → Redeploy) so the new settings are picked up.
+
+The `submissions` table is created automatically on the first message. To read messages, open the
+database from the Vercel Storage tab ("Open in Neon") and run:
+
+```sql
+SELECT * FROM submissions ORDER BY created_at DESC;
+```
+
+Photo links are in the `image_urls` column (kept for turning photographed recipes into site recipes later).
+
+Local testing of the form: `npm run dev` doesn't run the `/api` functions. Use `npx vercel link`, `npx vercel env pull`
+and then `npx vercel dev` instead.
+
 ## Deploy
 
 1. Create an empty repository on GitHub, then:

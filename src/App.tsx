@@ -1,5 +1,5 @@
-import { CookingPot, Heart, House, Moon, Search, Sun } from 'lucide-react'
-import { useEffect } from 'react'
+import { CookingPot, Heart, House, Mail, Moon, Search, Sun } from 'lucide-react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router'
 import { useFavorites } from './favorites'
 import { useLang, type Lang } from './i18n'
@@ -7,6 +7,9 @@ import HomePage, { scrollToSection } from './pages/HomePage'
 import RecipePage from './pages/RecipePage'
 import { useTheme } from './theme'
 import { useFilters } from './useFilters'
+
+// Loaded only when someone opens the contact page (keeps the main page fast)
+const ContactPage = lazy(() => import('./pages/ContactPage'))
 
 export default function App() {
   const { d, setLang } = useLang()
@@ -94,6 +97,7 @@ export default function App() {
             {navItem(d.t.navRecipes, () => goTo('recipes'))}
             {navItem(d.t.navCategories, () => goTo('categories'))}
             {navItem(d.t.navSeasons, () => goTo('seasons'))}
+            {navItem(d.t.navContact, () => navigate('/contact'), location.pathname === '/contact')}
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
@@ -165,6 +169,14 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage f={f} />} />
           <Route path="/recipe/:id" element={<RecipePage />} />
+          <Route
+            path="/contact"
+            element={
+              <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <ContactPage />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<RecipePage />} />
         </Routes>
       </div>
@@ -173,7 +185,12 @@ export default function App() {
         <p className="inline-flex items-center gap-2">
           <CookingPot size={18} className="text-accent" /> {d.t.footer}
         </p>
-        <p className="mt-1 text-xs text-stone-400">{d.t.photosFrom}</p>
+        <p className="mt-3">
+          <Link to="/contact" className="inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
+            <Mail size={15} /> {d.t.navContact}
+          </Link>
+        </p>
+        <p className="mt-2 text-xs text-stone-400">{d.t.photosFrom}</p>
       </footer>
     </div>
   )
